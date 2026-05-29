@@ -15,7 +15,7 @@ use vga_buffer::{Color, ColorCode, WRITER};
 use keyboard::{get_key, DecodedKey};
 use apps::bash::BashShell;
 use apps::explorer::{FileExplorer, WebBrowser};
-use apps::office::{UloText, UloSlides, UloNumbers, UloMail};
+use apps::office::{UloText, UloSlides, UloNumbers, UloMail, UloWeather, UloMusic, UloKeep};
 use apps::doom::TuiDoom;
 use vga_driver::VGA;
 
@@ -34,6 +34,9 @@ pub enum ActiveApp {
     Doom,
     Settings,
     Store,
+    Weather,
+    Music,
+    Keep,
 }
 
 pub static BASH: Mutex<BashShell> = Mutex::new(BashShell::new());
@@ -46,6 +49,9 @@ pub static BROWSER: Mutex<WebBrowser> = Mutex::new(WebBrowser::new());
 pub static DOOM_GAME: Mutex<TuiDoom> = Mutex::new(TuiDoom::new());
 pub static SYSTEM_SETTINGS: Mutex<SystemSettings> = Mutex::new(SystemSettings::new());
 pub static APP_STORE: Mutex<AppStore> = Mutex::new(AppStore::new());
+pub static WEATHER: Mutex<UloWeather> = Mutex::new(UloWeather::new());
+pub static MUSIC_SYNTH: Mutex<UloMusic> = Mutex::new(UloMusic::new());
+pub static STICKY_KEEP: Mutex<UloKeep> = Mutex::new(UloKeep::new());
 
 // Global mouse cursor coordinate state
 pub static CURSOR_X: Mutex<usize> = Mutex::new(160);
@@ -140,6 +146,18 @@ pub extern "C" fn _start() -> ! {
                 draw_gui_window("UloOS App Store", 10, 15, 300, 160);
                 APP_STORE.lock().draw();
             }
+            ActiveApp::Weather => {
+                draw_gui_window("UloWeather Live", 10, 15, 300, 160);
+                WEATHER.lock().draw();
+            }
+            ActiveApp::Music => {
+                draw_gui_window("UloMusic Synthesizer", 10, 15, 300, 160);
+                MUSIC_SYNTH.lock().draw();
+            }
+            ActiveApp::Keep => {
+                draw_gui_window("UloKeep Notes Board", 10, 15, 300, 160);
+                STICKY_KEEP.lock().draw();
+            }
         }
 
         // Draw high-resolution cursor pixel mapping pointer (Standard Arrow cursor)
@@ -168,29 +186,39 @@ pub extern "C" fn _start() -> ! {
                 // Start Menu popups
                 else if start_menu_open {
                     if click_x >= 50 && click_x <= 270 {
-                        if click_y >= 60 && click_y <= 70 {
+                        if click_y >= 36 && click_y <= 46 {
                             if click_x < 150 { current_app = ActiveApp::Bash; } 
                             else { current_app = ActiveApp::Explorer; }
                             start_menu_open = false;
                         }
-                        else if click_y >= 72 && click_y <= 82 {
+                        else if click_y >= 48 && click_y <= 58 {
                             if click_x < 150 { current_app = ActiveApp::Text; } 
                             else { current_app = ActiveApp::Slides; }
                             start_menu_open = false;
                         }
-                        else if click_y >= 84 && click_y <= 94 {
+                        else if click_y >= 60 && click_y <= 70 {
                             if click_x < 150 { current_app = ActiveApp::Numbers; } 
                             else { current_app = ActiveApp::Mail; }
                             start_menu_open = false;
                         }
-                        else if click_y >= 96 && click_y <= 106 {
+                        else if click_y >= 72 && click_y <= 82 {
                             if click_x < 150 { current_app = ActiveApp::Browser; } 
                             else { current_app = ActiveApp::Doom; }
                             start_menu_open = false;
                         }
-                        else if click_y >= 108 && click_y <= 118 {
+                        else if click_y >= 84 && click_y <= 94 {
                             if click_x < 150 { current_app = ActiveApp::Store; } 
                             else { current_app = ActiveApp::Settings; }
+                            start_menu_open = false;
+                        }
+                        else if click_y >= 96 && click_y <= 106 {
+                            if click_x < 150 { current_app = ActiveApp::Weather; }
+                            else { current_app = ActiveApp::Music; }
+                            start_menu_open = false;
+                        }
+                        else if click_y >= 108 && click_y <= 118 {
+                            if click_x < 150 { current_app = ActiveApp::Keep; }
+                            else { current_app = ActiveApp::Bash; }
                             start_menu_open = false;
                         }
                     }
@@ -198,11 +226,14 @@ pub extern "C" fn _start() -> ! {
                 // Desktop Shortcut clicks (Refined for small size icons in high-density layout)
                 else if current_app == ActiveApp::Desktop {
                     if click_x >= 10 && click_x <= 120 {
-                        if click_y >= 15 && click_y <= 27 { current_app = ActiveApp::Explorer; }
-                        else if click_y >= 35 && click_y <= 47 { current_app = ActiveApp::Bash; }
-                        else if click_y >= 55 && click_y <= 67 { current_app = ActiveApp::Text; }
-                        else if click_y >= 75 && click_y <= 87 { current_app = ActiveApp::Doom; }
-                        else if click_y >= 95 && click_y <= 107 { current_app = ActiveApp::Store; }
+                        if click_y >= 10 && click_y <= 24 { current_app = ActiveApp::Explorer; }
+                        else if click_y >= 30 && click_y <= 44 { current_app = ActiveApp::Bash; }
+                        else if click_y >= 50 && click_y <= 64 { current_app = ActiveApp::Text; }
+                        else if click_y >= 70 && click_y <= 84 { current_app = ActiveApp::Doom; }
+                        else if click_y >= 90 && click_y <= 104 { current_app = ActiveApp::Store; }
+                        else if click_y >= 110 && click_y <= 124 { current_app = ActiveApp::Weather; }
+                        else if click_y >= 130 && click_y <= 144 { current_app = ActiveApp::Music; }
+                        else if click_y >= 150 && click_y <= 164 { current_app = ActiveApp::Keep; }
                     }
                 }
             }
@@ -219,6 +250,9 @@ pub extern "C" fn _start() -> ! {
                         ActiveApp::Doom => DOOM_GAME.lock().handle_input(c),
                         ActiveApp::Settings => SYSTEM_SETTINGS.lock().handle_input(c),
                         ActiveApp::Store => APP_STORE.lock().handle_input(c),
+                        ActiveApp::Weather => WEATHER.lock().handle_input(c),
+                        ActiveApp::Music => MUSIC_SYNTH.lock().handle_input(c),
+                        ActiveApp::Keep => STICKY_KEEP.lock().handle_input(c),
                         _ => {}
                     }
                 }
@@ -331,11 +365,14 @@ fn draw_win95_graphics_desktop(active: ActiveApp, start_open: bool) {
     }
 
     // 2. Modern flat vertical desktop shortcuts (glowing white text, aligned to click boundaries)
-    draw_gui_icon("FILES", 10, 15, 10);
-    draw_gui_icon("DOS", 10, 35, 14);
-    draw_gui_icon("WRITE", 10, 55, 11);
-    draw_gui_icon("DOOM", 10, 75, 12);
-    draw_gui_icon("STORE", 10, 95, 13);
+    draw_gui_icon("FILES", 10, 12, 10);
+    draw_gui_icon("DOS", 10, 32, 14);
+    draw_gui_icon("WRITE", 10, 52, 11);
+    draw_gui_icon("DOOM", 10, 72, 12);
+    draw_gui_icon("STORE", 10, 92, 13);
+    draw_gui_icon("WEATHER", 10, 112, 14);
+    draw_gui_icon("MUSIC", 10, 132, 11);
+    draw_gui_icon("KEEP", 10, 152, 12);
 
     // Modern Floating Clock Widget at Top-Right
     VGA.draw_rect(248, 12, 62, 14, 8);  // Outline border
@@ -383,22 +420,27 @@ fn draw_win95_graphics_desktop(active: ActiveApp, start_open: bool) {
         ActiveApp::Doom => VGA.draw_string(icon_offset_x, 188, "[DOOM]", 11),
         ActiveApp::Settings => VGA.draw_string(icon_offset_x, 188, "[Settings]", 11),
         ActiveApp::Store => VGA.draw_string(icon_offset_x, 188, "[Store]", 11),
+        ActiveApp::Weather => VGA.draw_string(icon_offset_x, 188, "[Weather]", 11),
+        ActiveApp::Music => VGA.draw_string(icon_offset_x, 188, "[Music]", 11),
+        ActiveApp::Keep => VGA.draw_string(icon_offset_x, 188, "[UloKeep]", 11),
     }
 
     // UloOS 1.2 Modern Centered Start Menu overlay (placed directly above the centered Start button)
     if start_open {
-        VGA.draw_rect(50, 42, 220, 142, 11); // glowing neon cyan border outline
-        VGA.draw_rect(51, 43, 218, 140, 8);  // Charcoal solid body (no retro bevels!)
-        VGA.draw_rect(52, 44, 216, 138, 8);
+        VGA.draw_rect(50, 18, 220, 166, 11); // glowing neon cyan border outline
+        VGA.draw_rect(51, 19, 218, 164, 8);  // Charcoal solid body (no retro bevels!)
+        VGA.draw_rect(52, 20, 216, 162, 8);
 
-        VGA.draw_rect(55, 47, 210, 10, 9); // Sleek modern blue header
-        VGA.draw_string(58, 48, "UloOS 1.2 Pinned Apps", 15);
+        VGA.draw_rect(55, 23, 210, 10, 9); // Sleek modern blue header
+        VGA.draw_string(58, 24, "UloOS 1.2 Pinned Apps", 15);
 
-        VGA.draw_string(58, 62, "1. Bash Shell  2. Explorer", 15);
-        VGA.draw_string(58, 74, "3. UloText     4. UloSlides", 15);
-        VGA.draw_string(58, 86, "5. UloNumbers  6. UloMail", 15);
-        VGA.draw_string(58, 98, "7. UloBrowser  8. TUI DOOM", 15);
-        VGA.draw_string(58, 110, "9. App Store   0. Settings", 15);
+        VGA.draw_string(58, 38, "1. Bash Shell  2. Explorer", 15);
+        VGA.draw_string(58, 50, "3. UloText     4. UloSlides", 15);
+        VGA.draw_string(58, 62, "5. UloNumbers  6. UloMail", 15);
+        VGA.draw_string(58, 74, "7. UloBrowser  8. TUI DOOM", 15);
+        VGA.draw_string(58, 86, "9. App Store   0. Settings", 15);
+        VGA.draw_string(58, 98, "A. Weather     B. Music Synth", 15);
+        VGA.draw_string(58, 110, "C. UloKeep     D. Command CLI", 15);
         VGA.draw_rect(55, 126, 210, 1, 0); // separator
         VGA.draw_string(58, 134, "Restart UloOS Machine", 12);
     }
@@ -451,6 +493,22 @@ fn draw_gui_icon(label: &str, x: usize, y: usize, _color: u8) {
         "STORE" => {
             VGA.draw_rect(x, y, 10, 9, 14); // Yellow shopping bag
             VGA.draw_rect(x + 2, y - 2, 6, 2, 0); // Bag handle
+        }
+        "WEATHER" => {
+            VGA.draw_rect(x + 2, y, 6, 6, 14); // Yellow sun core
+            VGA.draw_rect(x, y + 2, 10, 5, 15); // White cloud body overlay
+        }
+        "MUSIC" => {
+            VGA.draw_rect(x, y + 6, 4, 3, 13); // Magenta note head 1
+            VGA.draw_rect(x + 6, y + 6, 4, 3, 13); // Magenta note head 2
+            VGA.draw_rect(x + 3, y, 1, 7, 15); // White stem 1
+            VGA.draw_rect(x + 9, y, 1, 7, 15); // White stem 2
+            VGA.draw_rect(x + 3, y, 7, 2, 15); // Connecting beam
+        }
+        "KEEP" => {
+            VGA.draw_rect(x, y, 10, 10, 14); // Bright Yellow note card base
+            VGA.draw_rect(x + 2, y + 2, 6, 1, 0); // dark note checklist line 1
+            VGA.draw_rect(x + 2, y + 5, 4, 1, 0); // checklist line 2
         }
         _ => {}
     }

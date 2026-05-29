@@ -249,3 +249,184 @@ fn integer_to_str(val: i32) -> &'static str {
         _ => "Custom",
     }
 }
+
+// ==========================================
+// ULOWEATHER: Dynamic Weather dashboard
+// ==========================================
+pub struct UloWeather {
+    pub selected: usize, // 0 = Mumbai, 1 = NY, 2 = London, 3 = Tokyo
+}
+
+impl UloWeather {
+    pub const fn new() -> Self {
+        UloWeather { selected: 0 }
+    }
+
+    pub fn draw(&self) {
+        VGA.draw_rect(12, 28, 296, 144, 15);
+
+        VGA.draw_rect(12, 28, 296, 14, 9);
+        VGA.draw_string(16, 31, "UloWeather Live Forecast", 15);
+
+        let cities = ["Mumbai, IN", "New York, US", "London, UK", "Tokyo, JP"];
+        let temps = ["29 C", "22 C", "15 C", "18 C"];
+        let conds = ["Rainy Monsoon", "Sunny Blue Sky", "Foggy Drizzle", "Blossom Breeze"];
+        let humidities = ["85%", "42%", "92%", "50%"];
+        let wind = ["24 km/h", "8 km/h", "18 km/h", "15 km/h"];
+
+        VGA.draw_rect(12, 42, 90, 130, 7);
+        for idx in 0..4 {
+            let is_sel = idx == self.selected;
+            let bg_col = if is_sel { 1 } else { 7 };
+            let fg_col = if is_sel { 15 } else { 0 };
+            VGA.draw_rect(14, 46 + idx * 24, 86, 16, bg_col);
+            VGA.draw_string(16, 50 + idx * 24, cities[idx], fg_col);
+        }
+
+        VGA.draw_string(110, 50, "City: ", 8);
+        VGA.draw_string(150, 50, cities[self.selected], 1);
+
+        VGA.draw_string(110, 70, "Temperature: ", 8);
+        VGA.draw_string(210, 70, temps[self.selected], 12);
+
+        VGA.draw_string(110, 90, "Condition: ", 8);
+        VGA.draw_string(200, 90, conds[self.selected], 2);
+
+        VGA.draw_string(110, 110, "Humidity: ", 8);
+        VGA.draw_string(180, 110, humidities[self.selected], 0);
+
+        VGA.draw_string(110, 130, "Wind Speed: ", 8);
+        VGA.draw_string(190, 130, wind[self.selected], 0);
+
+        VGA.draw_string(110, 152, "[W/S] Change City", 8);
+    }
+
+    pub fn handle_input(&mut self, key: char) {
+        match key {
+            'w' | 'W' => { if self.selected > 0 { self.selected -= 1; } }
+            's' | 'S' => { if self.selected < 3 { self.selected += 1; } }
+            _ => {}
+        }
+    }
+}
+
+// ==========================================
+// ULOMUSIC: Audio Synthesizer
+// ==========================================
+pub struct UloMusic {
+    pub last_frequency: u32,
+    pub wave_type: usize,
+}
+
+impl UloMusic {
+    pub const fn new() -> Self {
+        UloMusic { last_frequency: 0, wave_type: 0 }
+    }
+
+    pub fn draw(&self) {
+        VGA.draw_rect(12, 28, 296, 144, 0);
+
+        VGA.draw_rect(12, 28, 296, 14, 5);
+        VGA.draw_string(16, 31, "UloMusic Audio Synthesizer", 15);
+
+        VGA.draw_rect(16, 55, 288, 1, 8);
+        if self.last_frequency > 0 {
+            for x in (16..300).step_by(12) {
+                let peak = if x % 24 == 0 { 15 } else { 5 };
+                VGA.draw_rect(x, 55 - peak, 2, peak * 2, 10);
+            }
+            VGA.draw_string(16, 80, "STATUS: Playing synthesized tone...", 10);
+        } else {
+            VGA.draw_string(16, 80, "STATUS: Silent (Press key to play)", 8);
+        }
+
+        VGA.draw_string(16, 105, "Press Keys to play frequency:", 15);
+        VGA.draw_string(16, 120, "1:C4  2:D4  3:E4  4:F4  5:G4  6:A4", 11);
+        VGA.draw_string(16, 134, "7:B4  8:C5  [Space]: Stop Tone", 11);
+    }
+
+    pub fn handle_input(&mut self, key: char) {
+        let freq = match key {
+            '1' => 261,
+            '2' => 293,
+            '3' => 329,
+            '4' => 349,
+            '5' => 392,
+            '6' => 440,
+            '7' => 493,
+            '8' => 523,
+            ' ' => 0,
+            _ => return,
+        };
+        self.last_frequency = freq;
+        unsafe {
+            crate::sound::play_tone(freq);
+        }
+    }
+}
+
+// ==========================================
+// ULOKEEP: Sticky notes manager
+// ==========================================
+pub struct UloKeep {
+    pub notes: [&'static str; 3],
+    pub selected: usize,
+}
+
+impl UloKeep {
+    pub const fn new() -> Self {
+        UloKeep {
+            notes: [
+                "Deploy UloOS to bare metal x86 hardware safely.",
+                "Star the GitHub Aqua-code750/uloos-1.2 repo!",
+                "Check out the beautiful Fluent web simulator design.",
+            ],
+            selected: 0,
+        }
+    }
+
+    pub fn draw(&self) {
+        VGA.draw_rect(12, 28, 296, 144, 15);
+
+        VGA.draw_rect(12, 28, 296, 14, 14);
+        VGA.draw_string(16, 31, "UloKeep Sticky Notes Board", 0);
+
+        for idx in 0..3 {
+            let is_sel = idx == self.selected;
+            let bg_col = if is_sel { 14 } else { 7 };
+            let fg_col = if is_sel { 0 } else { 8 };
+            
+            VGA.draw_rect(18, 48 + idx * 36, 100, 30, bg_col);
+            
+            let mut label = [b'N', b'o', b't', b'e', b' ', b'0', b'\0'];
+            label[5] = b'1' + idx as u8;
+            VGA.draw_string(24, 58 + idx * 36, core::str::from_utf8(&label[..6]).unwrap(), fg_col);
+        }
+
+        VGA.draw_rect(130, 48, 168, 98, 14);
+        VGA.draw_string(136, 52, "Selected Stickie:", 8);
+
+        let note_text = self.notes[self.selected];
+        if note_text.len() > 20 {
+            VGA.draw_string(136, 72, &note_text[..20], 0);
+            if note_text.len() > 40 {
+                VGA.draw_string(136, 88, &note_text[20..40], 0);
+                VGA.draw_string(136, 104, &note_text[40..], 0);
+            } else {
+                VGA.draw_string(136, 88, &note_text[20..], 0);
+            }
+        } else {
+            VGA.draw_string(136, 72, note_text, 0);
+        }
+
+        VGA.draw_string(136, 130, "[W/S] Choose stickie note", 8);
+    }
+
+    pub fn handle_input(&mut self, key: char) {
+        match key {
+            'w' | 'W' => { if self.selected > 0 { self.selected -= 1; } }
+            's' | 'S' => { if self.selected < 2 { self.selected += 1; } }
+            _ => {}
+        }
+    }
+}
