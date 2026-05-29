@@ -63,6 +63,9 @@ impl UloText {
 // ==========================================
 // ULOSLIDES: Presentation Creator
 // ==========================================
+// ==========================================
+// ULOSLIDES: Presentation Creator
+// ==========================================
 pub struct UloSlides {
     pub slides: [(&'static str, &'static str); 3],
     pub current: usize,
@@ -72,33 +75,61 @@ impl UloSlides {
     pub const fn new() -> Self {
         UloSlides {
             slides: [
-                ("Welcome to UloSlides!", "The primary student slide deck engine written completely in Rust."),
-                ("Advanced Rust Kernel", "Supports custom x86_64 target specifications with 0 compiler dependencies."),
-                ("System Performance", "Optimized microkernel layout running efficiently inside QEMU."),
+                ("1. Microkernel Architecture", "Featuring multi-threaded scheduler loops, CMOS sync, and IST offset timezone clocks."),
+                ("2. Graphical VGA Mode 13h", "Rendering beautiful 256-color flat carbon-grid designs on bare-metal systems."),
+                ("3. Modular Rust Drivers", "Zero dependencies compile configuration loaded cleanly inside QEMU x86_64 target."),
             ],
             current: 0,
         }
     }
 
     pub fn draw(&self) {
-        // Gray slide stage background
-        VGA.draw_rect(12, 28, 296, 144, 7);
+        // High quality dark gray stage
+        VGA.draw_rect(12, 28, 296, 144, 8);
 
-        // Slide card inner
-        VGA.draw_rect(24, 40, 272, 120, 15);
-        VGA.draw_rect(24, 40, 272, 15, 14); // Yellow card header
+        // Sidebar thumbnails panel
+        VGA.draw_rect(12, 28, 60, 144, 7); // gray background
+        VGA.draw_string(14, 34, "Slides", 1);
+        
+        for idx in 0..3 {
+            let is_sel = idx == self.current;
+            let bg_col = if is_sel { 1 } else { 7 };
+            let fg_col = if is_sel { 15 } else { 8 };
+            
+            VGA.draw_rect(14, 46 + idx * 24, 56, 18, bg_col);
+            let mut label = [b'P', b'a', b'g', b'e', b' ', b'1', b'\0'];
+            label[5] = b'1' + idx as u8;
+            VGA.draw_string(16, 50 + idx * 24, core::str::from_utf8(&label[..6]).unwrap(), fg_col);
+        }
 
-        VGA.draw_string(28, 43, "Slide Preview", 0);
+        // Active presentation slide card
+        VGA.draw_rect(76, 34, 226, 132, 15); // Pure white slide paper sheet
+        VGA.draw_rect(76, 34, 226, 12, 11); // Blue indicator header
+        VGA.draw_string(80, 36, "Slide Deck Show", 0);
 
         let current_slide = self.slides[self.current];
-        VGA.draw_string(32, 70, current_slide.0, 1);
-        VGA.draw_string(32, 95, current_slide.1, 0);
+        VGA.draw_string(82, 54, current_slide.0, 1);
+        
+        // Wrap presentation description text beautifully
+        let desc = current_slide.1;
+        if desc.len() > 24 {
+            VGA.draw_string(82, 74, &desc[..24], 8);
+            if desc.len() > 48 {
+                VGA.draw_string(82, 88, &desc[24..48], 8);
+                VGA.draw_string(82, 102, &desc[48..], 8);
+            } else {
+                VGA.draw_string(82, 88, &desc[24..], 8);
+            }
+        } else {
+            VGA.draw_string(82, 74, desc, 8);
+        }
 
-        // Progress footer
-        let mut progress = [0u8; 15];
-        progress[..12].copy_from_slice(b"Slide: [ /3]");
-        progress[8] = b'1' + self.current as u8;
-        VGA.draw_string(110, 140, core::str::from_utf8(&progress).unwrap(), 8);
+        // Animated index progress indicator bar
+        VGA.draw_rect(82, 128, 214, 4, 7); // progress track
+        let fill_w = 71 * (self.current + 1);
+        VGA.draw_rect(82, 128, fill_w, 4, 2); // green fill
+
+        VGA.draw_string(82, 142, "Press [Space] Next Slide", 8);
     }
 
     pub fn next(&mut self) {
@@ -123,47 +154,98 @@ impl UloNumbers {
     pub const fn new() -> Self {
         UloNumbers {
             cells: [
-                [100, 200, 300, 0, 0],
-                [50, 60, 110, 0, 0],
-                [25, 25, 50, 0, 0],
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0],
+                [100, 50, 0, 0, 0],
+                [80, 20, 0, 0, 0],
+                [30, 40, 0, 0, 0],
+                [10, 10, 0, 0, 0],
+                [5, 5, 0, 0, 0],
             ],
             selected_r: 0,
             selected_c: 0,
         }
     }
 
-    pub fn draw(&self) {
+    pub fn draw(&mut self) {
         // High white workspace
         VGA.draw_rect(12, 28, 296, 144, 15);
 
+        // Dynamic formula recalculation: C = A + B, D = A - B
+        for r in 0..5 {
+            self.cells[r][2] = self.cells[r][0] + self.cells[r][1];
+            self.cells[r][3] = self.cells[r][0] - self.cells[r][1];
+        }
+
         // Columns headers
-        VGA.draw_string(16, 34, "Row  |  A   |  B   |  C   |  D   ", 2);
-        VGA.draw_rect(16, 44, 288, 1, 8); // Header divider line
+        VGA.draw_string(16, 32, "Row |  Col A |  Col B | Col C(SUM) ", 1);
+        VGA.draw_rect(16, 42, 288, 1, 8); // Header divider line
 
         for r in 0..5 {
-            let row_y = 52 + r * 16;
+            let row_y = 48 + r * 15;
             
             // Draw row count label
             let mut row_label = [b' ', b' ', b'1' + r as u8, b' ', b'|', b'\0'];
-            VGA.draw_string(16, row_y, core::str::from_utf8(&row_label[..5]).unwrap(), 2);
+            VGA.draw_string(16, row_y, core::str::from_utf8(&row_label[..5]).unwrap(), 8);
 
-            for c in 0..4 {
+            for c in 0..3 {
                 let cell_val = self.cells[r][c];
                 let is_selected = self.selected_r == r && self.selected_c == c;
                 
                 let mut buf = [b' ', b' ', b' ', b' ', b' ', b' ', b' ', b'\0'];
-                let val_str = integer_to_str(cell_val);
-                buf[1..1 + val_str.len()].copy_from_slice(val_str.as_bytes());
+                
+                // Write dynamic values to string buffer
+                let mut temp = cell_val;
+                let mut is_neg = false;
+                if temp < 0 {
+                    is_neg = true;
+                    temp = -temp;
+                }
+                
+                let mut char_idx = 5;
+                if temp == 0 {
+                    buf[char_idx] = b'0';
+                } else {
+                    while temp > 0 && char_idx > 0 {
+                        buf[char_idx] = b'0' + (temp % 10) as u8;
+                        temp /= 10;
+                        char_idx -= 1;
+                    }
+                    if is_neg && char_idx > 0 {
+                        buf[char_idx] = b'-';
+                    }
+                }
 
-                let bg_color = if is_selected { 11 } else { 15 }; // Cyan highlight if active
+                let bg_color = if is_selected { 11 } else { 15 }; // Cyan highlight
                 let fg_color = if is_selected { 0 } else { 8 };
 
-                VGA.draw_rect(52 + c * 56, row_y - 2, 48, 12, bg_color);
-                VGA.draw_string(54 + c * 56, row_y, core::str::from_utf8(&buf[..7]).unwrap(), fg_color);
+                VGA.draw_rect(54 + c * 80, row_y - 2, 60, 11, bg_color);
+                VGA.draw_string(58 + c * 80, row_y, core::str::from_utf8(&buf[..7]).unwrap(), fg_color);
             }
         }
+
+        // Live calculation total Sum footer
+        let mut total_sum = 0;
+        for r in 0..5 {
+            total_sum += self.cells[r][2];
+        }
+
+        VGA.draw_rect(16, 126, 288, 1, 8); // total divider
+        VGA.draw_string(16, 132, "Total Formula Sum of Cells:", 12);
+        
+        let mut total_buf = [b' ', b' ', b' ', b' ', b' ', b' ', b' ', b'\0'];
+        let mut temp = total_sum;
+        let mut char_idx = 5;
+        if temp == 0 {
+            total_buf[char_idx] = b'0';
+        } else {
+            while temp > 0 && char_idx > 0 {
+                total_buf[char_idx] = b'0' + (temp % 10) as u8;
+                temp /= 10;
+                char_idx -= 1;
+            }
+        }
+        VGA.draw_string(230, 132, core::str::from_utf8(&total_buf[..7]).unwrap(), 12);
+
+        VGA.draw_string(16, 150, "WASD to Navigate | Press [+] / [-] Edit", 8);
     }
 
     pub fn handle_input(&mut self, key: char) {
@@ -171,7 +253,7 @@ impl UloNumbers {
             'w' | 'W' => { if self.selected_r > 0 { self.selected_r -= 1; } }
             's' | 'S' => { if self.selected_r < 4 { self.selected_r += 1; } }
             'a' | 'A' => { if self.selected_c > 0 { self.selected_c -= 1; } }
-            'd' | 'D' => { if self.selected_c < 3 { self.selected_c += 1; } }
+            'd' | 'D' => { if self.selected_c < 1 { self.selected_c += 1; } } // edit Col A & Col B
             '+' => { self.cells[self.selected_r][self.selected_c] += 10; }
             '-' => { self.cells[self.selected_r][self.selected_c] -= 10; }
             _ => {}
