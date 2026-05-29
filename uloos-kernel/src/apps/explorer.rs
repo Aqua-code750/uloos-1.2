@@ -80,14 +80,23 @@ impl FileExplorer {
 // WEB BROWSER
 // ==========================================
 pub struct WebBrowser {
-    pub url: &'static str,
+    pub url: [u8; 120],
+    pub url_len: usize,
     pub current_mode: usize, // 0 = Sandbox, 1 = Firefox Proxy, 2 = Chrome
 }
 
 impl WebBrowser {
     pub const fn new() -> Self {
+        let default_url = "https://google.com/sandbox";
+        let mut url = [0; 120];
+        let mut idx = 0;
+        while idx < default_url.len() && idx < 120 {
+            url[idx] = default_url.as_bytes()[idx];
+            idx += 1;
+        }
         WebBrowser {
-            url: "https://google.com/sandbox",
+            url,
+            url_len: idx,
             current_mode: 0,
         }
     }
@@ -97,7 +106,11 @@ impl WebBrowser {
 
         VGA.draw_rect(14, 32, 292, 14, 7);
         VGA.draw_string(16, 35, "URL: ", 8);
-        VGA.draw_string(50, 35, self.url, 0);
+        
+        if let Ok(u_str) = core::str::from_utf8(&self.url[..self.url_len]) {
+            VGA.draw_string(50, 35, u_str, 0);
+            VGA.draw_rect(50 + self.url_len * 8, 41, 6, 2, 1);
+        }
 
         if self.current_mode == 0 {
             VGA.draw_rect(240, 33, 62, 12, 9);
@@ -130,19 +143,35 @@ impl WebBrowser {
             VGA.draw_string(16, 120, "Searching code repositories...", 8);
         }
 
-        VGA.draw_string(16, 150, "Press [M] Switch Mode (Sandbox/Firefox/Chrome)", 8);
+        VGA.draw_string(16, 150, "Press [M] Switch Mode | Type URL + [Enter]", 8);
     }
 
     pub fn handle_input(&mut self, key: char) {
         if key == 'm' || key == 'M' {
             self.current_mode = (self.current_mode + 1) % 3;
-            if self.current_mode == 0 {
-                self.url = "https://google.com/sandbox";
+            let default_url = if self.current_mode == 0 {
+                "https://google.com/sandbox"
             } else if self.current_mode == 1 {
-                self.url = "https://www.croxyproxy.com/";
+                "https://www.croxyproxy.com/"
             } else {
-                self.url = "https://google.com/search?igu=1";
+                "https://google.com/search?igu=1"
+            };
+            self.url_len = 0;
+            for idx in 0..default_url.len() {
+                if idx < 120 {
+                    self.url[idx] = default_url.as_bytes()[idx];
+                    self.url_len += 1;
+                }
             }
+        } else if self.url_len < 22 {
+            self.url[self.url_len] = key as u8;
+            self.url_len += 1;
+        }
+    }
+
+    pub fn handle_backspace(&mut self) {
+        if self.url_len > 0 {
+            self.url_len -= 1;
         }
     }
 }

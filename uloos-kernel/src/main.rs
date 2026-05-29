@@ -261,6 +261,7 @@ pub extern "C" fn _start() -> ! {
                     match current_app {
                         ActiveApp::Bash => BASH.lock().handle_backspace(),
                         ActiveApp::Text => TEXT_EDITOR.lock().handle_backspace(),
+                        ActiveApp::Browser => BROWSER.lock().handle_backspace(),
                         _ => {}
                     }
                 }
