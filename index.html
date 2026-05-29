@@ -935,7 +935,10 @@
       height: 30px;
       border-radius: 50%;
       border: none;
-      cursor: pointer;
+    @keyframes clippyFloat {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
     }
   </style>
 </head>
@@ -996,6 +999,22 @@
         <div class="shortcut doom" onclick="openWindow('win-doom')">
           <i class="fa-solid fa-skull"></i>
           <span>DOOM</span>
+        </div>
+        <div class="shortcut paint" onclick="openWindow('win-paint')">
+          <i class="fa-solid fa-palette" style="color: #ec4899;"></i>
+          <span>UloPaint</span>
+        </div>
+        <div class="shortcut snipping" onclick="openWindow('win-snipping')">
+          <i class="fa-solid fa-scissors" style="color: #cbd5e1;"></i>
+          <span>Snipping Tool</span>
+        </div>
+        <div class="shortcut taskmgr" onclick="openWindow('win-taskmanager')">
+          <i class="fa-solid fa-chart-line" style="color: #10b981;"></i>
+          <span>Task Manager</span>
+        </div>
+        <div class="shortcut calculator" onclick="openWindow('win-calculator')">
+          <i class="fa-solid fa-calculator" style="color: #3b82f6;"></i>
+          <span>Calculator</span>
         </div>
       </div>
 
@@ -1170,6 +1189,141 @@
         </div>
       </div>
 
+      <!-- ULOPAINT WINDOW -->
+      <div id="win-paint" class="window" style="width: 600px; height: 480px;">
+        <div class="window-header">
+          <div class="window-title"><i class="fa-solid fa-palette" style="color: #ec4899;"></i> UloPaint - Art Studio</div>
+          <div class="window-controls">
+            <div class="control-dot dot-minimize" onclick="minimizeWindow('win-paint')"></div>
+            <div class="control-dot dot-maximize" onclick="maximizeWindow('win-paint')"></div>
+            <div class="control-dot dot-close" onclick="closeWindow('win-paint')"></div>
+          </div>
+        </div>
+        <div class="window-body" style="background:#2d2d30; display:flex; flex-direction:column; padding:10px; box-sizing:border-box;">
+          <div style="background:#1e1e1f; padding:8px 12px; border-radius:8px; display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap; border:1px solid rgba(255,255,255,0.05);">
+            <input type="color" id="paint-color" value="#00f0ff" style="border:none; background:transparent; width:30px; height:30px; cursor:pointer;">
+            <div style="display:flex; gap:4px;">
+              <span onclick="setPaintColor('#ff4b4b')" style="width:20px; height:20px; border-radius:50%; background:#ff4b4b; display:inline-block; cursor:pointer; border:1px solid #fff;"></span>
+              <span onclick="setPaintColor('#00f0ff')" style="width:20px; height:20px; border-radius:50%; background:#00f0ff; display:inline-block; cursor:pointer;"></span>
+              <span onclick="setPaintColor('#22c55e')" style="width:20px; height:20px; border-radius:50%; background:#22c55e; display:inline-block; cursor:pointer;"></span>
+              <span onclick="setPaintColor('#ec4899')" style="width:20px; height:20px; border-radius:50%; background:#ec4899; display:inline-block; cursor:pointer;"></span>
+              <span onclick="setPaintColor('#eab308')" style="width:20px; height:20px; border-radius:50%; background:#eab308; display:inline-block; cursor:pointer;"></span>
+              <span onclick="setPaintColor('#ffffff')" style="width:20px; height:20px; border-radius:50%; background:#ffffff; display:inline-block; cursor:pointer;"></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:5px; color:#fff; font-size:11px; margin-left:10px;">
+              <span>Brush:</span>
+              <input type="range" id="paint-size" min="1" max="40" value="8" style="width:70px; cursor:pointer;">
+            </div>
+            <button class="ide-btn" onclick="clearPaintCanvas()" style="margin-left:auto; font-size:11px;"><i class="fa-solid fa-eraser"></i> Clear</button>
+            <button class="ide-btn" onclick="downloadPaintDrawing()" style="background:rgba(236,72,153,0.35); border:1px solid #ec4899; font-size:11px;"><i class="fa-solid fa-download"></i> Save to PC</button>
+          </div>
+          <div style="flex:1; background:#ffffff; border-radius:8px; overflow:hidden; position:relative; border:1px solid rgba(0,0,0,0.2);">
+            <canvas id="paint-canvas" style="width:100%; height:100%; display:block; background:#fff; cursor:crosshair;"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- SNIPPING TOOL WINDOW -->
+      <div id="win-snipping" class="window" style="width: 520px; height: 380px;">
+        <div class="window-header">
+          <div class="window-title"><i class="fa-solid fa-scissors" style="color: #cbd5e1;"></i> Snipping Tool</div>
+          <div class="window-controls">
+            <div class="control-dot dot-minimize" onclick="minimizeWindow('win-snipping')"></div>
+            <div class="control-dot dot-maximize" onclick="maximizeWindow('win-snipping')"></div>
+            <div class="control-dot dot-close" onclick="closeWindow('win-snipping')"></div>
+          </div>
+        </div>
+        <div class="window-body" style="background:#18181b; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; color:#fff;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:10px;">
+            <button class="ide-btn" onclick="startMockSnip()" style="background:var(--accent-color); color:#000; font-weight:bold;"><i class="fa-solid fa-scissors"></i> New Snip</button>
+            <div style="display:flex; gap:5px;">
+              <button class="ide-btn" onclick="analyzeSnipWithCopilot()" style="background:rgba(0,240,255,0.25); border:1px solid #00f0ff; color:#00f0ff;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Copilot</button>
+              <button class="ide-btn" onclick="saveSnipToPC()"><i class="fa-solid fa-download"></i> Save Snip</button>
+            </div>
+          </div>
+          <div id="snip-viewport" style="flex:1; background:#27272a; border-radius:8px; border:1px dashed rgba(255,255,255,0.2); display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden; position:relative;">
+            <i class="fa-solid fa-scissors" style="font-size:42px; color:#52525b; margin-bottom:10px;"></i>
+            <span style="font-size:12px; color:#a1a1aa;">Click "New Snip" to capture a portion of your UloOS Desktop!</span>
+          </div>
+          <div id="snip-copilot-bubble" style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,240,255,0.3); border-radius:8px; padding:10px; margin-top:10px; display:none; font-size:11px; line-height:1.4; color:#00f0ff; align-items:center; gap:8px;">
+            <i class="fa-solid fa-paperclip" style="font-size:16px;"></i>
+            <span id="snip-copilot-text">AI Copilot has analyzed your snip!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASK MANAGER WINDOW -->
+      <div id="win-taskmanager" class="window" style="width: 480px; height: 380px;">
+        <div class="window-header">
+          <div class="window-title"><i class="fa-solid fa-chart-line" style="color: #10b981;"></i> UloOS Task Manager</div>
+          <div class="window-controls">
+            <div class="control-dot dot-minimize" onclick="minimizeWindow('win-taskmanager')"></div>
+            <div class="control-dot dot-maximize" onclick="maximizeWindow('win-taskmanager')"></div>
+            <div class="control-dot dot-close" onclick="closeWindow('win-taskmanager')"></div>
+          </div>
+        </div>
+        <div class="window-body" style="background:#1c1917; color:#fff; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; font-family:system-ui, sans-serif;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
+            <div style="background:#292524; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.05); text-align:left;">
+              <span style="font-size:11px; color:#a8a29e; display:block;">CPU Usage</span>
+              <strong style="font-size:18px; color:#10b981;" id="taskmgr-cpu-val">12%</strong>
+              <div style="background:#44403c; height:4px; border-radius:2px; margin-top:8px; overflow:hidden;">
+                <div id="taskmgr-cpu-bar" style="background:#10b981; width:12%; height:100%; transition:width 0.5s;"></div>
+              </div>
+            </div>
+            <div style="background:#292524; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.05); text-align:left;">
+              <span style="font-size:11px; color:#a8a29e; display:block;">RAM Usage</span>
+              <strong style="font-size:18px; color:#3b82f6;">1.8 GB / 4.0 GB</strong>
+              <div style="background:#44403c; height:4px; border-radius:2px; margin-top:8px; overflow:hidden;">
+                <div style="background:#3b82f6; width:45%; height:100%;"></div>
+              </div>
+            </div>
+          </div>
+          <span style="font-size:11px; font-weight:700; color:#a8a29e; margin-bottom:6px; display:block; text-align:left;">ACTIVE RUNNING TASKS</span>
+          <div style="flex:1; background:#292524; border-radius:8px; overflow-y:auto; border:1px solid rgba(255,255,255,0.05); font-size:12px;" id="taskmgr-list">
+            <!-- Dynamically populated tasks -->
+          </div>
+        </div>
+      </div>
+
+      <!-- CALCULATOR WINDOW -->
+      <div id="win-calculator" class="window" style="width: 280px; height: 380px;">
+        <div class="window-header">
+          <div class="window-title"><i class="fa-solid fa-calculator" style="color: #3b82f6;"></i> Calculator</div>
+          <div class="window-controls">
+            <div class="control-dot dot-minimize" onclick="minimizeWindow('win-calculator')"></div>
+            <div class="control-dot dot-maximize" onclick="maximizeWindow('win-calculator')"></div>
+            <div class="control-dot dot-close" onclick="closeWindow('win-calculator')"></div>
+          </div>
+        </div>
+        <div class="window-body" style="background:#222; display:flex; flex-direction:column; padding:15px; box-sizing:border-box; color:#fff;">
+          <input type="text" id="calc-display" readonly style="width:100%; background:#111; border:1px solid #333; border-radius:8px; padding:12px; color:#fff; font-size:20px; text-align:right; font-family:monospace; margin-bottom:15px; box-sizing:border-box; outline:none;">
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; flex:1;">
+            <button onclick="pressCalcKey('C')" style="background:#ef4444; color:#fff; font-weight:bold; border:none; border-radius:6px; font-size:14px; cursor:pointer;">C</button>
+            <button onclick="pressCalcKey('/')" style="background:#3b82f6; color:#fff; font-weight:bold; border:none; border-radius:6px; font-size:14px; cursor:pointer;">/</button>
+            <button onclick="pressCalcKey('*')" style="background:#3b82f6; color:#fff; font-weight:bold; border:none; border-radius:6px; font-size:14px; cursor:pointer;">*</button>
+            <button onclick="pressCalcKey('-')" style="background:#3b82f6; color:#fff; font-weight:bold; border:none; border-radius:6px; font-size:14px; cursor:pointer;">-</button>
+            
+            <button onclick="pressCalcKey('7')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">7</button>
+            <button onclick="pressCalcKey('8')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">8</button>
+            <button onclick="pressCalcKey('9')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">9</button>
+            <button onclick="pressCalcKey('+')" style="background:#3b82f6; color:#fff; font-weight:bold; border:none; border-radius:6px; font-size:14px; cursor:pointer; grid-row: span 2; height:100%;">+</button>
+            
+            <button onclick="pressCalcKey('4')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">4</button>
+            <button onclick="pressCalcKey('5')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">5</button>
+            <button onclick="pressCalcKey('6')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">6</button>
+            
+            <button onclick="pressCalcKey('1')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">1</button>
+            <button onclick="pressCalcKey('2')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">2</button>
+            <button onclick="pressCalcKey('3')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">3</button>
+            <button onclick="pressCalcKey('=')" style="background:#10b981; color:#fff; font-weight:bold; border:none; border-radius:6px; font-size:14px; cursor:pointer; grid-row: span 2; height:100%;">=</button>
+            
+            <button onclick="pressCalcKey('0')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer; grid-column: span 2;">0</button>
+            <button onclick="pressCalcKey('.')" style="background:#333; color:#fff; border:none; border-radius:6px; font-size:14px; cursor:pointer;">.</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Dynamic Sandboxed App Iframe Containers (Spawned dynamically when custom apps are launched) -->
       <div id="custom-windows-container"></div>
 
@@ -1255,6 +1409,53 @@
     </div>
   </div>
 
+    <!-- FAKE BSOD OVERLAY -->
+    <div id="fake-bsod" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0078d7; color:#fff; font-family:system-ui, -apple-system, sans-serif; padding:50px; box-sizing:border-box; z-index:99999; text-align:left;">
+      <span style="font-size:100px; line-height:1; display:block; margin-bottom:20px;">:(</span>
+      <h1 style="font-size:24px; font-weight:300; margin-bottom:20px; color:#fff; border-bottom:none; margin-top:0;">Your PC ran into a problem of being too awesome and needs to restart.</h1>
+      <p style="font-size:14px; margin-bottom:30px; line-height:1.5;">We are just collecting some cool metadata, and then we will restart your daydreams. (<span id="bsod-percent">0</span>% complete)</p>
+      
+      <div style="display:flex; gap:20px; align-items:center; margin-top:40px;">
+        <div style="width:80px; height:80px; background:#fff; color:#0078d7; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; border-radius:10px;">
+          <i class="fa-solid fa-paperclip"></i>
+        </div>
+        <div>
+          <p style="font-size:13px; margin:0; color:#fff;">For more information about this issue and possible fixes, visit:</p>
+          <a style="font-size:13px; color:#fff; font-weight:bold; text-decoration:none;">https://github.com/Aqua-code750/uloos-1.2</a>
+          <p style="font-size:11px; margin-top:5px; color:#cbd5e1;">If you call a support person, give them this info:<br>Stop Code: <span style="font-weight:bold;">TOO_MUCH_RUST_IN_LONG_MODE</span><br>What failed: <span style="font-weight:bold;">uloclippy.sys</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ULOCLIPPY RETRO DESKTOP ASSISTANT -->
+    <div id="uloclippy-widget" onclick="talkClippy()" style="position:fixed; right:30px; bottom:80px; display:none; flex-direction:column; align-items:center; z-index:10000; cursor:pointer; font-family:system-ui, sans-serif; animation: clippyFloat 3s ease-in-out infinite;">
+      <!-- Speech bubble -->
+      <div id="clippy-bubble" style="position:absolute; bottom:90px; right:-10px; background:#fef08a; border:2px solid #000; padding:12px; border-radius:12px; width:220px; color:#000; font-size:11px; line-height:1.4; box-shadow:5px 5px 0 rgba(0,0,0,0.15); display:none; text-align:left; box-sizing:border-box;">
+        <div id="clippy-bubble-text">Hi! I'm UloClippy! Let's build a Rust kernel!</div>
+        <div style="position:absolute; bottom:-10px; right:35px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:10px solid #000;"></div>
+        <div style="position:absolute; bottom:-7px; right:35px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:10px solid #fef08a;"></div>
+      </div>
+      <!-- Clippy Character (animated FontAwesome Paperclip) -->
+      <div style="background:#fef08a; border:2px solid #000; width:50px; height:70px; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:3px 3px 0 rgba(0,0,0,0.15); position:relative; box-sizing:border-box;">
+        <i class="fa-solid fa-paperclip" style="font-size:32px; color:#3b82f6; transform:rotate(-15deg);"></i>
+        <!-- Eyes -->
+        <div style="position:absolute; top:18px; display:flex; gap:8px;">
+          <div style="width:8px; height:8px; background:#fff; border:1px solid #000; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center; box-sizing:border-box;">
+            <div style="width:4px; height:4px; background:#000; border-radius:50%; position:absolute; left:1px;"></div>
+          </div>
+          <div style="width:8px; height:8px; background:#fff; border:1px solid #000; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center; box-sizing:border-box;">
+            <div style="width:4px; height:4px; background:#000; border-radius:50%; position:absolute; left:1px;"></div>
+          </div>
+        </div>
+        <!-- Eyebrows -->
+        <div style="position:absolute; top:12px; display:flex; gap:8px;">
+          <div style="width:10px; height:2px; background:#000; transform:rotate(10deg);"></div>
+          <div style="width:10px; height:2px; background:#000; transform:rotate(-10deg);"></div>
+        </div>
+      </div>
+      <span style="font-size:9px; color:#fff; background:rgba(0,0,0,0.6); padding:2px 8px; border-radius:10px; margin-top:5px; font-weight:bold;">UloClippy 🦊</span>
+    </div>
+
   <script>
     // In-memory persistent Virtual File System
     let vfs = {
@@ -1334,6 +1535,7 @@
       
       // Auto-open explorer and browser in Windows 11 center positions
       openWindow('win-code');
+      showClippy();
     }
 
     // Dynamic Clock tray updates
@@ -2275,6 +2477,14 @@
     function openWindow(id) {
       const win = document.getElementById(id);
       if (!win) return;
+      
+      if (id === 'win-paint') {
+        setTimeout(initUloPaint, 100);
+      }
+      if (id === 'win-taskmanager') {
+        setTimeout(initTaskManager, 100);
+      }
+      
       win.classList.add('active');
       
       const desktop = document.getElementById('desktop');
@@ -2367,6 +2577,22 @@
           <i class="fa-solid fa-skull" style="color:#f43f5e;"></i>
           <span>DOOM</span>
         </div>
+        <div class="start-app-item" onclick="openWindow('win-paint'); toggleStartMenu()">
+          <i class="fa-solid fa-palette" style="color:#ec4899;"></i>
+          <span>UloPaint</span>
+        </div>
+        <div class="start-app-item" onclick="openWindow('win-snipping'); toggleStartMenu()">
+          <i class="fa-solid fa-scissors" style="color:#cbd5e1;"></i>
+          <span>Snipping</span>
+        </div>
+        <div class="start-app-item" onclick="openWindow('win-taskmanager'); toggleStartMenu()">
+          <i class="fa-solid fa-chart-line" style="color:#10b981;"></i>
+          <span>Task Mgr</span>
+        </div>
+        <div class="start-app-item" onclick="openWindow('win-calculator'); toggleStartMenu()">
+          <i class="fa-solid fa-calculator" style="color:#3b82f6;"></i>
+          <span>Calculator</span>
+        </div>
       `;
 
       // Append custom apps
@@ -2431,6 +2657,308 @@
           desktop.style.backgroundImage = `url('${url}')`;
         }
       }
+    }
+
+    // ==========================================
+    // ULOPAINT ART STUDIO LOGIC
+    // ==========================================
+    let paintCanvas, paintCtx, isDrawing = false;
+    
+    function initUloPaint() {
+      paintCanvas = document.getElementById('paint-canvas');
+      if (!paintCanvas) return;
+      paintCtx = paintCanvas.getContext('2d');
+      
+      const rect = paintCanvas.parentElement.getBoundingClientRect();
+      paintCanvas.width = rect.width || 580;
+      paintCanvas.height = rect.height || 380;
+      
+      paintCtx.lineCap = 'round';
+      paintCtx.lineJoin = 'round';
+      
+      paintCanvas.addEventListener('mousedown', startDrawing);
+      paintCanvas.addEventListener('mousemove', draw);
+      paintCanvas.addEventListener('mouseup', stopDrawing);
+      paintCanvas.addEventListener('mouseleave', stopDrawing);
+    }
+    
+    function startDrawing(e) {
+      isDrawing = true;
+      const rect = paintCanvas.getBoundingClientRect();
+      paintCtx.beginPath();
+      paintCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+    
+    function draw(e) {
+      if (!isDrawing) return;
+      const rect = paintCanvas.getBoundingClientRect();
+      const color = document.getElementById('paint-color').value;
+      const size = document.getElementById('paint-size').value;
+      
+      paintCtx.strokeStyle = color;
+      paintCtx.lineWidth = size;
+      
+      paintCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      paintCtx.stroke();
+    }
+    
+    function stopDrawing() {
+      isDrawing = false;
+    }
+    
+    function setPaintColor(color) {
+      const colorPicker = document.getElementById('paint-color');
+      if (colorPicker) colorPicker.value = color;
+    }
+    
+    function clearPaintCanvas() {
+      if (paintCtx && paintCanvas) {
+        paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+      }
+    }
+    
+    function downloadPaintDrawing() {
+      if (!paintCanvas) return;
+      const a = document.createElement('a');
+      a.href = paintCanvas.toDataURL('image/png');
+      a.download = 'ulopaint_art.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // ==========================================
+    // SNIPPING TOOL LOGIC (WITH COPILOT JOKE)
+    // ==========================================
+    let activeSnipData = '';
+    
+    function startMockSnip() {
+      const win = document.getElementById('win-snipping');
+      if (win) win.style.display = 'none';
+      
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:99999; cursor:crosshair;';
+      overlay.innerHTML = '<div style="position:absolute; top:20px; left:50%; transform:translateX(-50%); background:#000; padding:10px 20px; border-radius:20px; color:#fff; font-size:12px; font-weight:bold;"><i class="fa-solid fa-scissors"></i> Drag a selection box over the UloOS Desktop...</div>';
+      
+      let startX, startY, selectBox;
+      
+      overlay.addEventListener('mousedown', (e) => {
+        startX = e.clientX;
+        startY = e.clientY;
+        selectBox = document.createElement('div');
+        selectBox.style.cssText = `position:fixed; border:2px dashed #00f0ff; background:rgba(0,240,255,0.15); left:${startX}px; top:${startY}px;`;
+        overlay.appendChild(selectBox);
+        
+        function drag(ev) {
+          const w = ev.clientX - startX;
+          const h = ev.clientY - startY;
+          selectBox.style.width = Math.abs(w) + 'px';
+          selectBox.style.height = Math.abs(h) + 'px';
+          selectBox.style.left = (w < 0 ? ev.clientX : startX) + 'px';
+          selectBox.style.top = (h < 0 ? ev.clientY : startY) + 'px';
+        }
+        
+        function release() {
+          overlay.removeEventListener('mousemove', drag);
+          overlay.removeEventListener('mouseup', release);
+          overlay.remove();
+          
+          if (win) win.style.display = 'flex';
+          
+          const viewport = document.getElementById('snip-viewport');
+          if (viewport) {
+            viewport.innerHTML = `
+              <div style="width:100%; height:100%; background:linear-gradient(135deg, #ec4899, #8b5cf6); display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff;">
+                <i class="fa-solid fa-image" style="font-size:36px; margin-bottom:8px;"></i>
+                <span style="font-size:12px; font-weight:bold;">Captured Desktop Snip</span>
+                <span style="font-size:9px; opacity:0.7; margin-top:4px;">Size: 320 x 240 pixels</span>
+              </div>
+            `;
+          }
+          activeSnipData = 'captured';
+          document.getElementById('snip-copilot-bubble').style.display = 'none';
+        }
+        
+        overlay.addEventListener('mousemove', drag);
+        overlay.addEventListener('mouseup', release);
+      });
+      
+      document.body.appendChild(overlay);
+    }
+    
+    function analyzeSnipWithCopilot() {
+      if (!activeSnipData) {
+        alert("Please make a new snip first!");
+        return;
+      }
+      
+      const copilotQuotes = [
+        "AI Copilot Analysis: Detected a highly advanced operating system shell. Stopping Windows update protocols immediately.",
+        "AI Copilot Analysis: Captured area contains 100% pure genius. System recommendation: Star the uloos-1.2 repository on GitHub!",
+        "AI Copilot Analysis: Detected developer writing bare-metal Rust. Recommendation: Buy more coffee to prevent compiler errors.",
+        "AI Copilot Analysis: Warning! Legacy Windows bloatware detected outside this sandbox. Initiating UloOS defensive shields."
+      ];
+      
+      const quote = copilotQuotes[Math.floor(Math.random() * copilotQuotes.length)];
+      document.getElementById('snip-copilot-text').innerText = quote;
+      document.getElementById('snip-copilot-bubble').style.display = 'flex';
+    }
+    
+    function saveSnipToPC() {
+      if (!activeSnipData) {
+        alert("Please capture a snip first!");
+        return;
+      }
+      alert("Snip downloaded to your local PC successfully!");
+    }
+
+    // ==========================================
+    // TASK MANAGER LOGIC
+    // ==========================================
+    function initTaskManager() {
+      if (window.taskMgrInterval) clearInterval(window.taskMgrInterval);
+      window.taskMgrInterval = setInterval(() => {
+        const cpuVal = Math.floor(Math.random() * 20) + 5;
+        const display = document.getElementById('taskmgr-cpu-val');
+        const bar = document.getElementById('taskmgr-cpu-bar');
+        if (display) display.innerText = cpuVal + '%';
+        if (bar) bar.style.width = cpuVal + '%';
+      }, 2000);
+      
+      populateTaskManagerList();
+    }
+    
+    function populateTaskManagerList() {
+      const list = document.getElementById('taskmgr-list');
+      if (!list) return;
+      
+      let tasks = [
+        { id: 'kernel', name: 'UloOS System Kernel (Rust)', type: 'System', ram: '240 MB' },
+        { id: 'desktop', name: 'Desktop Shell UI', type: 'System', ram: '110 MB' }
+      ];
+      
+      document.querySelectorAll('.window').forEach(win => {
+        if (win.style.display === 'flex' || win.style.display === 'block') {
+          const title = win.querySelector('.window-title').innerText;
+          tasks.push({
+            id: win.id,
+            name: title.trim(),
+            type: 'Application',
+            ram: (Math.floor(Math.random() * 80) + 40) + ' MB'
+          });
+        }
+      });
+      
+      list.innerHTML = '';
+      tasks.forEach(task => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding:10px 15px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;';
+        
+        let killButtonHtml = '';
+        if (task.type === 'Application') {
+          killButtonHtml = `<button onclick="closeWindow('${task.id}'); populateTaskManagerList();" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:10px; cursor:pointer; font-weight:bold;">End Task</button>`;
+        } else {
+          killButtonHtml = `<span style="font-size:10px; color:#a8a29e;">Protected</span>`;
+        }
+        
+        div.innerHTML = `
+          <div style="text-align:left;">
+            <strong style="color:#fff;">${task.name}</strong>
+            <span style="font-size:10px; color:#a8a29e; display:block;">Type: ${task.type} | RAM: ${task.ram}</span>
+          </div>
+          ${killButtonHtml}
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==========================================
+    // CALCULATOR KEYBOARD LOGIC
+    // ==========================================
+    function pressCalcKey(key) {
+      const display = document.getElementById('calc-display');
+      if (!display) return;
+      
+      if (key === 'C') {
+        display.value = '';
+      } else if (key === '=') {
+        try {
+          display.value = eval(display.value);
+        } catch(err) {
+          display.value = 'Error';
+        }
+      } else {
+        if (display.value === 'Error') display.value = '';
+        display.value += key;
+      }
+    }
+
+    // ==========================================
+    // ULOCLIPPY ASSISTANT LOGIC
+    // ==========================================
+    const clippyQuotes = [
+      "Hi! I'm UloClippy! I noticed you are trying to write an x86_64 operating system kernel in Rust. Would you like me to rewrite it in assembly, or should we go get ice cream?",
+      "Warning: Your computer's awesomeness has reached critical limits. Please run QEMU in fullscreen immediately!",
+      "Holograph Studios officially recommends upgrading your brain to UloOS 1.2 to unlock multi-threaded daydreams.",
+      "Did you know? Indian Standard Time (IST) is UTC+5:30. That means UloClippy lives 5 and a half hours in the future! Spooky!",
+      "Alert! I've detected Windows on your machine. Shall I replace it with UloOS 1.2? Click OK to accept, or click Cancel to also accept!",
+      "Let's play a game! Close your eyes and count to 10. If you open them and I'm still here, you owe me a cookie!",
+      "Warning: This operating system has no support because it is too perfect to need any! 🗿"
+    ];
+
+    function showClippy() {
+      const clippy = document.getElementById('uloclippy-widget');
+      if (clippy) {
+        clippy.style.display = 'flex';
+        setTimeout(() => {
+          const bubble = document.getElementById('clippy-bubble');
+          const bubbleText = document.getElementById('clippy-bubble-text');
+          if (bubble && bubbleText) {
+            bubbleText.innerText = "Hi! I'm UloClippy! Let's build a Rust kernel! 🦊";
+            bubble.style.display = 'block';
+          }
+        }, 1500);
+      }
+    }
+    
+    function talkClippy() {
+      const bubble = document.getElementById('clippy-bubble');
+      const bubbleText = document.getElementById('clippy-bubble-text');
+      if (bubble && bubbleText) {
+        const quote = clippyQuotes[Math.floor(Math.random() * clippyQuotes.length)];
+        bubbleText.innerText = quote;
+        bubble.style.display = 'block';
+        
+        if (window.clippyTimer) clearTimeout(window.clippyTimer);
+        window.clippyTimer = setTimeout(() => {
+          bubble.style.display = 'none';
+        }, 6000);
+      }
+    }
+
+    function triggerFakeBSOD() {
+      closeWindow('win-support-end');
+      const bsod = document.getElementById('fake-bsod');
+      const percentEl = document.getElementById('bsod-percent');
+      if (!bsod) return;
+      
+      bsod.style.display = 'block';
+      let percent = 0;
+      
+      const interval = setInterval(() => {
+        percent += Math.floor(Math.random() * 15) + 5;
+        if (percent >= 100) {
+          percent = 100;
+          clearInterval(interval);
+          
+          setTimeout(() => {
+            bsod.style.display = 'none';
+            alert("UloOS Simulator safely rebooted! Matrix restored.");
+            location.reload();
+          }, 1500);
+        }
+        if (percentEl) percentEl.innerText = percent;
+      }, 400);
     }
   </script>
 </body>
