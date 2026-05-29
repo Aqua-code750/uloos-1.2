@@ -1054,6 +1054,7 @@
                 <div style="display:flex; gap:8px;">
                   <button class="ide-btn" onclick="runIdeCode()"><i class="fa-solid fa-play"></i> Run Preview</button>
                   <button class="ide-btn" onclick="saveIdeCode()"><i class="fa-solid fa-floppy-disk"></i> Save Code</button>
+                  <button class="ide-btn" onclick="downloadIdeCode()" style="background:rgba(139,92,246,0.35); border:1px solid #8b5cf6;"><i class="fa-solid fa-download"></i> Download to PC</button>
                   <button class="ide-btn" onclick="publishIdeCode()"><i class="fa-solid fa-circle-arrow-up"></i> Publish App</button>
                 </div>
               </div>
@@ -1120,6 +1121,7 @@
             <div id="text-editor-file-label">file: new_document.txt</div>
             <div style="display:flex; gap:8px;">
               <button class="ide-btn" onclick="saveTextDocument()"><i class="fa-solid fa-floppy-disk"></i> Save Document</button>
+              <button class="ide-btn" onclick="downloadTextDocument()" style="background:rgba(59,130,246,0.35); border:1px solid #3b82f6;"><i class="fa-solid fa-download"></i> Download to PC</button>
               <button class="ide-btn" onclick="clearTextDocument()"><i class="fa-solid fa-trash-can"></i> Clear</button>
             </div>
           </div>
@@ -1588,6 +1590,46 @@
 
     function clearTextDocument() {
       document.getElementById('ulotext-textarea').value = '';
+    }
+
+    function downloadTextDocument() {
+      const label = document.getElementById('text-editor-file-label').innerText.replace('file: ', '');
+      const content = document.getElementById('ulotext-textarea').value;
+      if (!content) {
+        alert("Cannot download an empty document!");
+        return;
+      }
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = label || 'document.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function downloadIdeCode() {
+      const label = document.getElementById('ide-active-file-label').innerText.replace('editing: ', '');
+      const content = document.getElementById('ide-code-textarea').value;
+      if (!content) {
+        alert("Cannot download empty source code!");
+        return;
+      }
+      
+      let mime = 'text/plain';
+      if (label.endsWith('.html')) mime = 'text/html';
+      else if (label.endsWith('.css')) mime = 'text/css';
+      else if (label.endsWith('.js')) mime = 'text/javascript';
+      else if (label.endsWith('.rs')) mime = 'text/rust';
+      
+      const blob = new Blob([content], { type: mime });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = label || 'source_code.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
     // Web Browser Actions with Dynamic Mock URL Routing
