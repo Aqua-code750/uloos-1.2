@@ -1640,6 +1640,25 @@
       }
     }
 
+    function navigateBrowser(url) {
+      const tab = browserTabs.find(t => t.id === activeBrowserTabId);
+      if (tab) {
+        tab.url = url;
+        // Clean up title
+        let cleanTitle = url.replace('https://', '').replace('http://', '').split('/')[0];
+        if (url.includes('github.com/Aqua-code750/uloos-1.2')) {
+          cleanTitle = 'uloos-1.2';
+        } else if (url.includes('github.com/Aqua-code750')) {
+          cleanTitle = 'Aqua-code750';
+        } else if (url.includes('youtube.com/watch')) {
+          cleanTitle = 'YouTube Player';
+        }
+        tab.title = cleanTitle;
+        populateBrowserTabs();
+        reloadActiveTab();
+      }
+    }
+
     function reloadActiveTab() {
       const tab = browserTabs.find(t => t.id === activeBrowserTabId);
       if (!tab) return;
@@ -1647,28 +1666,376 @@
 
       const container = document.getElementById('browser-iframe-container');
       
-      // Dynamic rendering of beautiful mock pages for CORS-protected core pages
-      if (tab.url.includes('google.com')) {
+      // Normalize URL
+      let normUrl = tab.url.toLowerCase().trim();
+      if (!normUrl.startsWith('http://') && !normUrl.startsWith('https://')) {
+        normUrl = 'https://' + normUrl;
+      }
+
+      // 1. GOOGLE MOCK
+      if (normUrl.includes('google.com')) {
+        // Extract query if exists
+        let query = '';
+        if (normUrl.includes('?q=')) {
+          query = decodeURIComponent(normUrl.split('?q=')[1].split('&')[0]);
+        }
+        
+        let searchResultsHtml = '';
+        if (query) {
+          searchResultsHtml = `
+            <div style="max-width: 650px; text-align: left; margin-top: 20px;">
+              <p style="color: #94a3b8; font-size: 12px; margin-bottom: 15px;">About 1,240 results (0.18 seconds)</p>
+              
+              <div style="margin-bottom: 22px;">
+                <span style="color: #94a3b8; font-size: 11px; display: block;">github.com &gt; Aqua-code750 &gt; uloos-1.2</span>
+                <a href="#" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750/uloos-1.2'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500; hover: underline;">GitHub - Aqua-code750/uloos-1.2: Bare-metal x86_64 OS Kernel</a>
+                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">Official UloOS 1.2 kernel repository. Written in pure Rust and Assembly. Features PS/2 keyboard/mouse controllers, CMOS clock synchronized to IST timezone, and flat charcoal grid VGA UI.</p>
+              </div>
+
+              <div style="margin-bottom: 22px;">
+                <span style="color: #94a3b8; font-size: 11px; display: block;">github.com &gt; Aqua-code750</span>
+                <a href="#" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Aqua-code750 (GitHub Profile) - Holograph Studios</a>
+                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">Explore project repositories by Aqua-code750 including UloOS Minimal, system simulators, and bare metal utilities. Contact: kavsmanutv@gmail.com.</p>
+              </div>
+
+              <div style="margin-bottom: 22px;">
+                <span style="color: #94a3b8; font-size: 11px; display: block;">wikipedia.org &gt; wiki &gt; Hobby_operating_system</span>
+                <a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/Hobby_operating_system'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Hobby operating system - Wikipedia</a>
+                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">A hobby operating system is an OS created from scratch, designed to study kernel architecture, long mode, bios interrupts, and driver interfaces.</p>
+              </div>
+
+              <div style="margin-bottom: 22px;">
+                <span style="color: #94a3b8; font-size: 11px; display: block;">youtube.com &gt; watch?v=rust-os</span>
+                <a href="#" onclick="window.parent.navigateBrowser('https://youtube.com/watch?v=rust-os'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Let's build a x86_64 Operating System in Rust! - YouTube</a>
+                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">A detailed guide on setting up long mode, handling interrupts, writing VGA drivers, and resolving PS/2 mouse conflicts in bare metal Rust.</p>
+              </div>
+            </div>
+          `;
+        }
+
         container.innerHTML = `
-          <div style="padding:40px; font-family:sans-serif; text-align:center; background:#1e293b; color:#fff; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-            <h1 style="font-size:36px; font-weight:800; background:linear-gradient(45deg,#00f0ff,#9d4edd); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:20px;">Google</h1>
-            <input type="text" id="g-search" placeholder="Search the web (mock interface)..." style="width: 320px; padding:10px; border-radius:20px; border:none; outline:none; font-size:14px; text-align:center;">
-            <button onclick="alert('Searching: ' + document.getElementById('g-search').value)" style="margin-top:15px; background:linear-gradient(45deg,#00f0ff,#9d4edd); border:none; padding:8px 20px; color:#000; border-radius:20px; cursor:pointer; font-weight:bold;">Search</button>
+          <div style="padding:30px; font-family:system-ui, sans-serif; text-align:center; background:#1e293b; color:#fff; height:100%; overflow-y:auto; display:flex; flex-direction:column; align-items:center; box-sizing:border-box;">
+            <div style="margin-top: ${query ? '10px' : '50px'}; transition: all 0.3s;">
+              <h1 style="font-size:${query ? '32px' : '54px'}; font-weight:800; background:linear-gradient(45deg,#00f0ff,#9d4edd); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:15px; letter-spacing:-1px;">Google</h1>
+            </div>
+            <div style="position: relative; width: 100%; max-width: 500px;">
+              <input type="text" id="g-search" value="${query}" placeholder="Search Google or type a URL..." style="width: 100%; padding:12px 20px; border-radius:24px; border:1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); outline:none; font-size:14px; text-align:left; color:#fff; box-sizing:border-box;" onkeydown="if(event.key==='Enter') { window.parent.navigateBrowser('https://google.com?q=' + encodeURIComponent(this.value)); }">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 18px; top: 16px; color: #94a3b8; cursor: pointer;" onclick="window.parent.navigateBrowser('https://google.com?q=' + encodeURIComponent(document.getElementById('g-search').value))"></i>
+            </div>
+            ${searchResultsHtml ? searchResultsHtml : `
+              <div style="margin-top: 25px; display: flex; gap: 10px;">
+                <button onclick="window.parent.navigateBrowser('https://google.com?q=' + encodeURIComponent(document.getElementById('g-search').value))" style="background:#334155; border:none; padding:8px 16px; color:#fff; border-radius:20px; cursor:pointer; font-size:13px; font-weight:500;">Google Search</button>
+                <button onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750')" style="background:#334155; border:none; padding:8px 16px; color:#fff; border-radius:20px; cursor:pointer; font-size:13px; font-weight:500;">I'm Feeling Lucky 🗿</button>
+              </div>
+              <div style="margin-top: 40px; text-align: left; max-width: 450px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <h4 style="color:#00f0ff; margin-bottom:5px; font-size: 13px;"><i class="fa-solid fa-compass"></i> Suggested Web Destinations:</h4>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+                  <span onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750')" style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:11px; cursor:pointer; hover:background:rgba(255,255,255,0.2);">github.com/Aqua-code750</span>
+                  <span onclick="window.parent.navigateBrowser('https://wikipedia.org')" style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:11px; cursor:pointer;">wikipedia.org</span>
+                  <span onclick="window.parent.navigateBrowser('https://youtube.com')" style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:11px; cursor:pointer;">youtube.com</span>
+                </div>
+              </div>
+            `}
           </div>
         `;
-      } else if (tab.url.includes('wikipedia.org')) {
+      } 
+      // 2. GITHUB MOCK
+      else if (normUrl.includes('github.com')) {
+        let pageContent = '';
+
+        if (normUrl.includes('uloos-1.2')) {
+          // Repo detailed page
+          pageContent = `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #30363d; padding-bottom:12px; margin-bottom:20px;">
+              <div>
+                <h2 style="font-size:20px; font-weight:600; display:flex; align-items:center; gap:8px;">
+                  <i class="fa-regular fa-bookmark" style="color:#8b949e;"></i>
+                  <a href="#" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750'); return false;" style="color:#58a6ff; text-decoration:none;">Aqua-code750</a>
+                  <span style="color:#8b949e;">/</span>
+                  <a href="#" style="color:#c9d1d9; text-decoration:none; font-weight:bold;">uloos-1.2</a>
+                  <span style="font-size:12px; padding:2px 8px; border:1px solid #30363d; border-radius:12px; color:#8b949e; font-weight:normal;">Public</span>
+                </h2>
+              </div>
+              <div>
+                <button style="background:#21262d; border:1px solid #30363d; color:#c9d1d9; padding:4px 12px; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer;"><i class="fa-regular fa-star"></i> Star <span style="background:#30363d; padding:2px 6px; border-radius:10px; margin-left:4px;">12</span></button>
+              </div>
+            </div>
+
+            <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; margin-bottom:20px;">
+              <div style="background:#21262d; border-bottom:1px solid #30363d; padding:12px; border-top-left-radius:6px; border-top-right-radius:6px; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#8b949e;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:24px; height:24px; border-radius:50%; background:linear-gradient(45deg,#00f0ff,#9d4edd); display:flex; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:10px;">A</div>
+                  <strong style="color:#c9d1d9;">Aqua-code750</strong> <span style="font-size:12px;">Refactored PS/2 status checks and timezone engine registers</span>
+                </div>
+                <span>latest commit yesterday</span>
+              </div>
+              <div style="font-size:13px;">
+                <div style="padding:10px 15px; border-bottom:1px solid #30363d; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="color:#c9d1d9;"><i class="fa-solid fa-folder" style="color:#58a6ff; margin-right:8px;"></i>src/</span>
+                  <span style="color:#8b949e; font-size:12px;">Mouse and Keyboard handler corrections</span>
+                </div>
+                <div style="padding:10px 15px; border-bottom:1px solid #30363d; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="color:#c9d1d9;"><i class="fa-solid fa-file" style="color:#8b949e; margin-right:8px;"></i>Cargo.toml</span>
+                  <span style="color:#8b949e; font-size:12px;">Bump bootimage version</span>
+                </div>
+                <div style="padding:10px 15px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="color:#c9d1d9;"><i class="fa-solid fa-file" style="color:#8b949e; margin-right:8px;"></i>README.md</span>
+                  <span style="color:#8b949e; font-size:12px;">Update timezone instructions for IST default</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:20px; box-sizing:border-box;">
+              <h3 style="border-bottom:1px solid #30363d; padding-bottom:8px; margin-bottom:12px; font-size:16px;">README.md</h3>
+              <h1 style="font-size:24px; margin-bottom:10px; color:#fff;">UloOS 1.2 Kernel</h1>
+              <p style="color:#8b949e; line-height:1.5; font-size:14px; margin-bottom:15px;">A highly polished, bare-metal x86_64 Operating System written in Rust. Emulated inside QEMU with a gorgeous charcoal grid display and highly validated input handlers.</p>
+              
+              <h3 style="font-size:14px; margin-top:20px; margin-bottom:8px; color:#58a6ff;">🚀 Core Technical Specs</h3>
+              <ul style="color:#c9d1d9; font-size:13px; line-height:1.6; padding-left:20px;">
+                <li><strong>Bare-Metal Rust:</strong> Compiled to native x86_64 target with zero-cost abstractions.</li>
+                <li><strong>Robust Input:</strong> Features fully isolated PS/2 keyboard/mouse interrupt handlers (checks bit 5 on port 0x64 to avoid data pollution).</li>
+                <li><strong>CMOS Clock:</strong> Direct hardware port queries (0x70/0x71) displaying continuous high-precision real time.</li>
+                <li><strong>IST Timezone:</strong> Configured for Indian Standard Time (UTC+5:30) out-of-the-box, with dynamically switchable global timezones (Z).</li>
+              </ul>
+            </div>
+          `;
+        } else {
+          // Profile page
+          pageContent = `
+            <div style="display:flex; gap:30px; margin-top:20px;">
+              <!-- Left Sidebar Profile -->
+              <div style="width:230px; flex-shrink:0;">
+                <div style="position:relative; width:200px; height:200px; border-radius:50%; background:linear-gradient(135deg,#00f0ff,#9d4edd); display:flex; align-items:center; justify-content:center; margin-bottom:15px; border: 1px solid #30363d;">
+                  <span style="font-size:80px; font-weight:800; color:#000;">A</span>
+                  <div style="position:absolute; bottom:10px; right:10px; background:#238636; border:3px solid #0d1117; width:18px; height:18px; border-radius:50%;"></div>
+                </div>
+                <h2 style="font-size:20px; font-weight:bold; color:#c9d1d9;">Aqua-code750</h2>
+                <div style="color:#8b949e; font-size:14px; margin-bottom:15px;">Aqua-code750</div>
+                <button style="width:100%; background:#21262d; border:1px solid #30363d; color:#c9d1d9; border-radius:6px; padding:6px; font-weight:bold; font-size:13px; margin-bottom:15px; cursor:pointer;">Follow</button>
+                <div style="font-size:13px; color:#c9d1d9; line-height:1.6;">
+                  <p><i class="fa-solid fa-users" style="margin-right:6px; color:#8b949e;"></i> <strong>12</strong> followers &bull; <strong>42</strong> following</p>
+                  <p style="margin-top:10px;"><i class="fa-solid fa-envelope" style="margin-right:6px; color:#8b949e;"></i> <a href="mailto:kavsmanutv@gmail.com" style="color:#58a6ff; text-decoration:none;">kavsmanutv@gmail.com</a></p>
+                  <p><i class="fa-solid fa-building" style="margin-right:6px; color:#8b949e;"></i> Holograph Studios</p>
+                </div>
+              </div>
+
+              <!-- Main Repos Section -->
+              <div style="flex-grow:1;">
+                <h3 style="border-bottom:1px solid #30363d; padding-bottom:8px; margin-bottom:15px; font-size:15px; color:#c9d1d9;">Popular Repositories</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                  
+                  <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:15px; cursor:pointer;" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750/uloos-1.2')">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                      <a style="color:#58a6ff; font-weight:bold; text-decoration:none; font-size:14px;">uloos-1.2</a>
+                      <span style="font-size:10px; border:1px solid #30363d; border-radius:10px; padding:2px 8px; color:#8b949e;">Public</span>
+                    </div>
+                    <p style="color:#8b949e; font-size:12px; line-height:1.4; margin-bottom:12px;">Modern x86_64 bare-metal OS kernel built in Rust. Features IST clock engine, PS/2 mouse correction, VGA UI.</p>
+                    <div style="display:flex; align-items:center; gap:12px; font-size:11px; color:#8b949e;">
+                      <span><span style="display:inline-block; width:10px; height:10px; background:#dea584; border-radius:50%; margin-right:4px;"></span>Rust</span>
+                      <span><i class="fa-regular fa-star"></i> 12</span>
+                    </div>
+                  </div>
+
+                  <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                      <a style="color:#58a6ff; font-weight:bold; text-decoration:none; font-size:14px;">uloos-web-simulator</a>
+                      <span style="font-size:10px; border:1px solid #30363d; border-radius:10px; padding:2px 8px; color:#8b949e;">Public</span>
+                    </div>
+                    <p style="color:#8b949e; font-size:12px; line-height:1.4; margin-bottom:12px;">Premium visual simulation layer for UloOS 1.2 with local file system and custom browser.</p>
+                    <div style="display:flex; align-items:center; gap:12px; font-size:11px; color:#8b949e;">
+                      <span><span style="display:inline-block; width:10px; height:10px; background:#e34c26; border-radius:50%; margin-right:4px;"></span>HTML</span>
+                      <span><i class="fa-regular fa-star"></i> 7</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
         container.innerHTML = `
-          <div style="padding:30px; font-family:serif; background:#fff; color:#000; height:100%; overflow-y:auto;">
-            <h2>Wikipedia: The Free Encyclopedia</h2>
-            <hr style="margin:10px 0;">
-            <h4>Hobby Operating Systems (x86_64)</h4>
-            <p style="margin-top:10px; line-height:1.6;">A hobby operating system is an OS created from scratch, typically by a single developer or small team. Many hobby systems are written in performance-centric programming languages like Rust and Assembly.</p>
-            <p style="margin-top:10px; line-height:1.6;"><strong>UloOS 11:</strong> Loaded successfully in bare metal long-mode registries.</p>
+          <div style="padding:15px 30px; font-family:system-ui, -apple-system, sans-serif; background:#0d1117; color:#c9d1d9; height:100%; overflow-y:auto; box-sizing:border-box;">
+            <!-- Header bar -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #21262d; padding-bottom:10px; margin-bottom:10px;">
+              <div style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750')">
+                <i class="fa-brands fa-github" style="font-size:26px; color:#f0f6fc;"></i>
+                <span style="font-weight:600; color:#fff; font-size:14px;">GitHub</span>
+              </div>
+              <div style="background:#21262d; border:1px solid #30363d; border-radius:6px; padding:4px 10px; display:flex; align-items:center; gap:6px; width:200px;">
+                <i class="fa-solid fa-magnifying-glass" style="color:#8b949e; font-size:12px;"></i>
+                <input type="text" placeholder="Search GitHub..." style="background:transparent; border:none; outline:none; color:#fff; font-size:12px; width:100%;">
+              </div>
+            </div>
+            ${pageContent}
           </div>
         `;
-      } else {
-        // Dynamic public iframe proxy fallback
-        container.innerHTML = `<iframe src="https://antigravity-simulated-web.vercel.app/demo-home" style="width:100%; height:100%; border:none;"></iframe>`;
+      } 
+      // 3. WIKIPEDIA MOCK
+      else if (normUrl.includes('wikipedia.org')) {
+        let wikiContent = '';
+        if (normUrl.includes('/wiki/')) {
+          const article = normUrl.split('/wiki/')[1];
+          if (article.toLowerCase() === 'hobby_operating_system') {
+            wikiContent = `
+              <h1>Hobby Operating System</h1>
+              <p style="color:#666; font-style:italic;">From Wikipedia, the free encyclopedia</p>
+              <hr style="border:0; border-top:1px solid #ccc; margin:15px 0;">
+              <p>A <strong>hobby operating system</strong> (sometimes known as a <i>homebrew kernel</i>) is an operating system developed outside of commercial or large open-source projects, typically by self-taught engineers, students, or hardware hobbyists to understand system-level interactions.</p>
+              
+              <h3 style="margin-top:20px; font-weight:600; border-bottom:1px solid #ccc; padding-bottom:4px;">Architecture</h3>
+              <p>Hobby kernels are frequently developed for the x86 or x86_64 architecture using emulation systems such as <a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/QEMU'); return false;">QEMU</a> or Bochs. Rust has become one of the premier programming languages for writing modern custom operating systems due to its robust safety models and zero-cost abstraction structures.</p>
+              
+              <h3 style="margin-top:20px; font-weight:600; border-bottom:1px solid #ccc; padding-bottom:4px;">Notable Implementations</h3>
+              <p>Notable minimalist bare-metal kernels include **UloOS 1.2**, constructed by <strong>Aqua-code750 (Holograph Studios)</strong>. UloOS implements real-time interrupts, double-column Start interfaces, and custom micro-animations.</p>
+            `;
+          } else if (article.toLowerCase() === 'qemu') {
+            wikiContent = `
+              <h1>QEMU</h1>
+              <p style="color:#666; font-style:italic;">From Wikipedia, the free encyclopedia</p>
+              <hr style="border:0; border-top:1px solid #ccc; margin:15px 0;">
+              <p><strong>QEMU</strong> (short for <i>Quick Emulator</i>) is a free and open-source hypervisor that performs hardware virtualization. It models various CPU architectures, letting developers simulate bare-metal software environments without real-world physical hardware units.</p>
+              <p>It is widely utilized in <a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/Hobby_operating_system'); return false;">hobby operating system</a> testing processes to boot raw bootable disk binaries on top of synthetic virtual CPUs.</p>
+            `;
+          } else {
+            wikiContent = `
+              <h1>Search results for "${decodeURIComponent(article)}"</h1>
+              <hr style="border:0; border-top:1px solid #ccc; margin:15px 0;">
+              <p>We found direct historical registers linking this search directly to <strong>UloOS 1.2 by Aqua-code750</strong>.</p>
+              <p><a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/Hobby_operating_system'); return false;">Read about Hobby Operating Systems instead &rarr;</a></p>
+            `;
+          }
+        } else {
+          wikiContent = `
+            <div style="text-align:center; padding:30px 0;">
+              <h1 style="font-family:serif; font-size:36px; font-weight:normal; margin-bottom:8px;">Wikipedia</h1>
+              <p style="color:#666; font-size:14px; letter-spacing:4px; text-transform:uppercase;">The Free Encyclopedia</p>
+              
+              <div style="margin:25px auto; max-width:400px; display:flex; border:1px solid #a2a9b1; border-radius:2px;">
+                <input type="text" id="w-search" placeholder="Search Wikipedia..." style="flex:1; padding:8px; border:none; outline:none; font-size:14px;">
+                <button onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/' + encodeURIComponent(document.getElementById('w-search').value))" style="background:#f8f9fa; border:none; border-left:1px solid #a2a9b1; padding:0 15px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
+              </div>
+
+              <div style="display:flex; justify-content:center; gap:20px; font-size:14px; margin-top:20px;">
+                <a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/Hobby_operating_system'); return false;" style="color:#0645ad; text-decoration:none;">Hobby Operating Systems</a>
+                <a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/QEMU'); return false;" style="color:#0645ad; text-decoration:none;">QEMU Emulator</a>
+              </div>
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          <div style="padding:25px 40px; font-family:Linux Libertine, Georgia, Times, serif; background:#ffffff; color:#000000; height:100%; overflow-y:auto; box-sizing:border-box; text-align:left;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer;" onclick="window.parent.navigateBrowser('https://wikipedia.org')">
+              <i class="fa-solid fa-book-open" style="font-size:24px; color:#555;"></i>
+              <span style="font-family:serif; font-size:20px; font-weight:normal; border-bottom:none;">Wikipedia</span>
+            </div>
+            ${wikiContent}
+          </div>
+        `;
+      }
+      // 4. YOUTUBE MOCK
+      else if (normUrl.includes('youtube.com') || normUrl.includes('youtu.be')) {
+        let embedVideoCode = 'dQw4w9WgXcQ'; // Rick Roll as ultimate fallback!
+        let videoTitle = 'UloOS 1.2 - Modern Bare Metal Rust OS in QEMU';
+        let views = '1,245 views';
+
+        if (normUrl.includes('rust-os')) {
+          embedVideoCode = '14X2NlplwD0'; // Operating system playlist video or similar
+          videoTitle = "Let's build a x86_64 Operating System in Rust! - Episode 1";
+          views = '84,930 views';
+        }
+
+        container.innerHTML = `
+          <div style="padding:15px; font-family:Roboto, Arial, sans-serif; background:#0f0f0f; color:#fff; height:100%; overflow-y:auto; box-sizing:border-box; text-align:left;">
+            <!-- Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; cursor:pointer;" onclick="window.parent.navigateBrowser('https://youtube.com')">
+              <div style="display:flex; align-items:center; gap:5px; color:#ff0000; font-size:20px; font-weight:bold; letter-spacing:-1px;">
+                <i class="fa-brands fa-youtube"></i>
+                <span style="color:#fff; font-size:18px;">YouTube</span>
+              </div>
+              <div style="background:#222; border-radius:20px; padding:6px 12px; display:flex; align-items:center; gap:6px; width:220px;">
+                <input type="text" placeholder="Search..." style="background:transparent; border:none; outline:none; color:#fff; font-size:12px; width:100%;">
+                <i class="fa-solid fa-magnifying-glass" style="color:#aaa; font-size:12px;"></i>
+              </div>
+            </div>
+
+            <!-- Video Player Area -->
+            <div style="background:#000; border-radius:12px; overflow:hidden; aspect-ratio: 16/9; margin-bottom:12px; max-width: 600px; margin: 0 auto 12px auto;">
+              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${embedVideoCode}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="border:none;"></iframe>
+            </div>
+
+            <div style="max-width: 600px; margin: 0 auto;">
+              <h2 style="font-size:16px; font-weight:bold; margin-bottom:4px; color:#fff; line-height:1.4;">${videoTitle}</h2>
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#aaa; border-bottom:1px solid #333; padding-bottom:10px;">
+                <span>${views} &bull; Streamed live on Indian Standard Time (IST)</span>
+                <div>
+                  <button style="background:#222; border:none; color:#fff; padding:6px 12px; border-radius:15px; font-size:11px; cursor:pointer; font-weight:500; margin-right:5px;"><i class="fa-regular fa-thumbs-up"></i> Like</button>
+                  <button style="background:#ff0000; border:none; color:#fff; padding:6px 12px; border-radius:15px; font-size:11px; cursor:pointer; font-weight:bold;">Subscribe</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      // 5. OTHER / FALLBACK WITH ELEGANT PORTAL
+      else {
+        container.innerHTML = `<div style="padding:40px; font-family:sans-serif; text-align:center; color:#cbd5e1; background:#1e293b; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; box-sizing:border-box;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px; color:#00f0ff;"></i> <span style="margin-top:10px;">Connecting through secure UloProxy gateway...</span></div>`;
+        
+        let requestUrl = tab.url;
+        if (!requestUrl.startsWith('http://') && !requestUrl.startsWith('https://')) {
+          requestUrl = 'https://' + requestUrl;
+        }
+
+        fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(requestUrl)}`)
+          .then(res => {
+            if (!res.ok) throw new Error("Connection failed");
+            return res.text();
+          })
+          .then(html => {
+            let processedHtml = html;
+            if (!html.includes('<base')) {
+              processedHtml = `<base href="${requestUrl}">` + html;
+            }
+            container.innerHTML = `<iframe id="frame-${tab.id}" class="preview-iframe" style="width:100%; height:100%; border:none; background:#fff;"></iframe>`;
+            document.getElementById(`frame-${tab.id}`).srcdoc = processedHtml;
+          })
+          .catch(err => {
+            // Elegant portal screen when external frame fails!
+            container.innerHTML = `
+              <div style="padding:30px 20px; font-family:system-ui, sans-serif; text-align:center; color:#fff; background:#0f172a; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; box-sizing:border-box; overflow-y:auto;">
+                <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid #f59e0b; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                  <i class="fa-solid fa-shield-halved" style="font-size:28px; color:#f59e0b;"></i>
+                </div>
+                <h4 style="font-size:18px; font-weight:700; color:#fff; margin-bottom:8px;">Holograph Sandbox Browser</h4>
+                <p style="font-size:12px; color:#94a3b8; max-width:400px; margin:0 auto 15px auto; line-height:1.5;">This site blocks standard external embedding policies (CORS). For a safe interactive sandbox environment, try one of our built-in functional developer mocks:</p>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:400px; width:100%; margin-bottom:20px;">
+                  <div onclick="window.parent.navigateBrowser('https://google.com')" style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:8px; cursor:pointer; text-align:left; hover:border:#00f0ff;">
+                    <strong style="font-size:13px; color:#8ab4f8; display:block;"><i class="fa-solid fa-magnifying-glass"></i> Google Sandbox</strong>
+                    <span style="font-size:10px; color:#64748b;">Search operating systems, dev specs</span>
+                  </div>
+                  <div onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750')" style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:8px; cursor:pointer; text-align:left;">
+                    <strong style="font-size:13px; color:#58a6ff; display:block;"><i class="fa-brands fa-github"></i> Aqua-code750 Profile</strong>
+                    <span style="font-size:10px; color:#64748b;">Explore UloOS 1.2 repositories</span>
+                  </div>
+                  <div onclick="window.parent.navigateBrowser('https://wikipedia.org')" style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:8px; cursor:pointer; text-align:left;">
+                    <strong style="font-size:13px; color:#fff; display:block;"><i class="fa-solid fa-book-open"></i> Wikipedia Reader</strong>
+                    <span style="font-size:10px; color:#64748b;">Full spec details on kernel designs</span>
+                  </div>
+                  <div onclick="window.parent.navigateBrowser('https://youtube.com/watch?v=rust-os')" style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:8px; cursor:pointer; text-align:left;">
+                    <strong style="font-size:13px; color:#ff0000; display:block;"><i class="fa-brands fa-youtube"></i> Tech Tube Player</strong>
+                    <span style="font-size:10px; color:#64748b;">Stream tutorial modules directly</span>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                  <button onclick="reloadActiveTab()" class="ide-btn" style="background:#334155; border:none; padding:8px 16px; color:#fff; border-radius:20px; cursor:pointer; font-size:12px;"><i class="fa-solid fa-rotate-right"></i> Retry Direct Load</button>
+                  <button onclick="window.parent.navigateBrowser('https://google.com')" class="ide-btn" style="background:linear-gradient(45deg,#00f0ff,#9d4edd); border:none; padding:8px 16px; color:#000; border-radius:20px; cursor:pointer; font-weight:bold; font-size:12px;">Launch Google Search</button>
+                </div>
+              </div>
+            `;
+          });
       }
     }
 
