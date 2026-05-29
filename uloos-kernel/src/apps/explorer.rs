@@ -81,34 +81,68 @@ impl FileExplorer {
 // ==========================================
 pub struct WebBrowser {
     pub url: &'static str,
-    pub page_content: [&'static str; 4],
+    pub current_mode: usize, // 0 = Sandbox, 1 = Firefox Proxy, 2 = Chrome
 }
 
 impl WebBrowser {
     pub const fn new() -> Self {
         WebBrowser {
-            url: "https://google.com/textmode",
-            page_content: [
-                "Google Text-Mode Search Engine",
-                "----------------------------------------------",
-                "  1. Nightly Rust docs (rust-lang.org)",
-                "  2. QEMU Emulator manuals (qemu.org)",
-            ],
+            url: "https://google.com/sandbox",
+            current_mode: 0,
         }
     }
 
     pub fn draw(&self) {
-        // High white browser background
         VGA.draw_rect(12, 28, 296, 144, 15);
 
-        // Address bar
         VGA.draw_rect(14, 32, 292, 14, 7);
         VGA.draw_string(16, 35, "URL: ", 8);
         VGA.draw_string(50, 35, self.url, 0);
 
-        // Page content
-        for idx in 0..4 {
-            VGA.draw_string(16, 60 + idx * 16, self.page_content[idx], 0);
+        if self.current_mode == 0 {
+            VGA.draw_rect(240, 33, 62, 12, 9);
+            VGA.draw_string(244, 35, "[Sandbox]", 15);
+        } else if self.current_mode == 1 {
+            VGA.draw_rect(240, 33, 62, 12, 12);
+            VGA.draw_string(244, 35, "[Firefox]", 15);
+        } else {
+            VGA.draw_rect(240, 33, 62, 12, 2);
+            VGA.draw_string(244, 35, "[ Chrome]", 15);
+        }
+
+        if self.current_mode == 0 {
+            VGA.draw_string(16, 56, "Holograph Sandbox Browser", 1);
+            VGA.draw_string(16, 72, "-----------------------------", 8);
+            VGA.draw_string(16, 88, "* Star Aqua-code750/uloos-1.2", 0);
+            VGA.draw_string(16, 104, "* Read Hobby OS Wikipedia pages", 0);
+            VGA.draw_string(16, 120, "* Test keyboard beeps in Music app", 0);
+        } else if self.current_mode == 1 {
+            VGA.draw_string(16, 56, "Firefox Unrestricted Proxy Dev", 12);
+            VGA.draw_string(16, 72, "-----------------------------", 8);
+            VGA.draw_string(16, 88, "* Bypassing CORS controls...", 10);
+            VGA.draw_string(16, 104, "  CroxyProxy live websocket: OK", 0);
+            VGA.draw_string(16, 120, "  Unrestricted real-world web!", 2);
+        } else {
+            VGA.draw_string(16, 56, "Google Chrome Real Search Mode", 2);
+            VGA.draw_string(16, 72, "-----------------------------", 8);
+            VGA.draw_string(16, 88, "Search query parser: Active", 0);
+            VGA.draw_string(16, 104, "Targeting google.com/search?igu=1", 0);
+            VGA.draw_string(16, 120, "Searching code repositories...", 8);
+        }
+
+        VGA.draw_string(16, 150, "Press [M] Switch Mode (Sandbox/Firefox/Chrome)", 8);
+    }
+
+    pub fn handle_input(&mut self, key: char) {
+        if key == 'm' || key == 'M' {
+            self.current_mode = (self.current_mode + 1) % 3;
+            if self.current_mode == 0 {
+                self.url = "https://google.com/sandbox";
+            } else if self.current_mode == 1 {
+                self.url = "https://www.croxyproxy.com/";
+            } else {
+                self.url = "https://google.com/search?igu=1";
+            }
         }
     }
 }

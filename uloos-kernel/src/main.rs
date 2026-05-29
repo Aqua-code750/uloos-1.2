@@ -253,6 +253,7 @@ pub extern "C" fn _start() -> ! {
                         ActiveApp::Weather => WEATHER.lock().handle_input(c),
                         ActiveApp::Music => MUSIC_SYNTH.lock().handle_input(c),
                         ActiveApp::Keep => STICKY_KEEP.lock().handle_input(c),
+                        ActiveApp::Browser => BROWSER.lock().handle_input(c),
                         _ => {}
                     }
                 }
