@@ -105,11 +105,15 @@ impl WebBrowser {
         VGA.draw_rect(12, 28, 296, 144, 15);
 
         VGA.draw_rect(14, 32, 292, 14, 7);
-        VGA.draw_string(16, 35, "URL: ", 8);
+        VGA.draw_string(16, 35, "< > R", 8);
+        VGA.draw_rect(50, 32, 1, 14, 8);
+        VGA.draw_string(55, 35, "URL: ", 8);
         
+        let mut typed_url = "https://google.com/sandbox";
         if let Ok(u_str) = core::str::from_utf8(&self.url[..self.url_len]) {
-            VGA.draw_string(50, 35, u_str, 0);
-            VGA.draw_rect(50 + self.url_len * 8, 41, 6, 2, 1);
+            VGA.draw_string(85, 35, u_str, 0);
+            typed_url = u_str;
+            VGA.draw_rect(85 + self.url_len * 8, 41, 6, 2, 1);
         }
 
         if self.current_mode == 0 {
@@ -123,27 +127,61 @@ impl WebBrowser {
             VGA.draw_string(244, 35, "[ Chrome]", 15);
         }
 
-        if self.current_mode == 0 {
-            VGA.draw_string(16, 56, "Holograph Sandbox Browser", 1);
-            VGA.draw_string(16, 72, "-----------------------------", 8);
-            VGA.draw_string(16, 88, "* Star Aqua-code750/uloos-1.2", 0);
-            VGA.draw_string(16, 104, "* Read Hobby OS Wikipedia pages", 0);
-            VGA.draw_string(16, 120, "* Test keyboard beeps in Music app", 0);
-        } else if self.current_mode == 1 {
-            VGA.draw_string(16, 56, "Firefox Unrestricted Proxy Dev", 12);
-            VGA.draw_string(16, 72, "-----------------------------", 8);
-            VGA.draw_string(16, 88, "* Bypassing CORS controls...", 10);
-            VGA.draw_string(16, 104, "  CroxyProxy live websocket: OK", 0);
-            VGA.draw_string(16, 120, "  Unrestricted real-world web!", 2);
-        } else {
-            VGA.draw_string(16, 56, "Google Chrome Real Search Mode", 2);
-            VGA.draw_string(16, 72, "-----------------------------", 8);
-            VGA.draw_string(16, 88, "Search query parser: Active", 0);
-            VGA.draw_string(16, 104, "Targeting google.com/search?igu=1", 0);
-            VGA.draw_string(16, 120, "Searching code repositories...", 8);
-        }
+        let is_github = typed_url.contains("git");
+        let is_youtube = typed_url.contains("you");
+        let is_wiki = typed_url.contains("wiki");
 
-        VGA.draw_string(16, 150, "Press [M] Switch Mode | Type URL + [Enter]", 8);
+        if is_github {
+            VGA.draw_rect(14, 48, 292, 12, 8);
+            VGA.draw_string(18, 50, "GitHub - Aqua-code750/uloos-1.2", 15);
+
+            VGA.draw_string(16, 68, "Repository: uloos-1.2 [Public]", 1);
+            VGA.draw_string(16, 82, "Language: Rust 100% | Stars: 1,200", 2);
+
+            VGA.draw_rect(16, 98, 288, 38, 7);
+            VGA.draw_string(20, 102, "#![no_std]", 4);
+            VGA.draw_string(20, 114, "fn _start() -> ! { loop {} }", 1);
+            VGA.draw_string(20, 126, "// Bare-metal QEMU bootloader", 8);
+            
+            VGA.draw_string(16, 148, "Press [M] to cycle presets", 8);
+        } else if is_youtube {
+            VGA.draw_rect(14, 48, 292, 12, 12);
+            VGA.draw_string(18, 50, "YouTube Studio Player", 15);
+
+            VGA.draw_rect(20, 68, 120, 65, 0);
+            VGA.draw_rect(75, 95, 10, 10, 12);
+            VGA.draw_string(22, 122, "--> playing clip", 10);
+
+            VGA.draw_string(148, 68, "Rust OS Tutorial", 1);
+            VGA.draw_string(148, 82, "By: Aqua-code750", 8);
+            VGA.draw_string(148, 96, "Views: 2.4M", 8);
+            
+            VGA.draw_rect(148, 115, 60, 4, 8);
+            VGA.draw_rect(148, 115, 45, 4, 10);
+
+            VGA.draw_string(16, 148, "Press [M] to cycle presets", 8);
+        } else if is_wiki {
+            VGA.draw_rect(14, 48, 292, 12, 7);
+            VGA.draw_string(18, 50, "Wikipedia - The Free Encyclopedia", 0);
+
+            VGA.draw_string(16, 68, "Hobby Operating System (OS)", 1);
+            VGA.draw_string(16, 82, "---------------------------", 8);
+            VGA.draw_string(16, 96, "An OS created from scratch", 0);
+            VGA.draw_string(16, 110, "designed to study kernel design,", 0);
+            VGA.draw_string(16, 124, "x86 paging, and custom BIOS.", 0);
+
+            VGA.draw_string(16, 148, "Press [M] to cycle presets", 8);
+        } else {
+            VGA.draw_string(16, 56, "Google search engine mode", 1);
+            VGA.draw_string(16, 72, "-----------------------------", 8);
+            
+            VGA.draw_string(16, 88, "Try typing one of these URLs:", 8);
+            VGA.draw_string(16, 104, "- github.com  (Load Git repository)", 2);
+            VGA.draw_string(16, 120, "- youtube.com (Load video player)", 12);
+            VGA.draw_string(16, 136, "- wikipedia.org (Load Wikipedia page)", 1);
+
+            VGA.draw_string(16, 150, "Press [M] Switch Mode | Type URL + [Enter]", 8);
+        }
     }
 
     pub fn handle_input(&mut self, key: char) {
