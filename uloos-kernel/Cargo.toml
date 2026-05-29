@@ -12,4 +12,4 @@ spin = "0.9.8"
 [package.metadata.bootimage]
 test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio", "-display", "none"]
 test-success-exit-code = 33         # (0x10 << 1) | 1
-run-command = ["C:\\Program Files\\qemu\\qemu-system-x86_64.exe", "-drive", "format=raw,file={}" ]
+run-command = ["C:\\Program Files\\qemu\\qemu-system-x86_64.exe", "-drive", "format=raw,file={}", "-full-screen" ]
