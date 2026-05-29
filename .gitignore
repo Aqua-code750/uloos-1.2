@@ -1,0 +1,20 @@
+# Ignore compiled Cargo artifacts but allow scanning subdirectories
+uloos-kernel/target/*
+!uloos-kernel/target/x86_64-unknown-none/
+uloos-kernel/target/x86_64-unknown-none/*
+!uloos-kernel/target/x86_64-unknown-none/debug/
+uloos-kernel/target/x86_64-unknown-none/debug/*
+!uloos-kernel/target/x86_64-unknown-none/debug/bootimage-uloos-kernel.bin
+
+# Ignore Web dependencies
+uloos-simulator/node_modules/
+website/node_modules/
+
+# Logs and system caches
+*.log
+.gemini/
+.antigravity/
+.system_generated/
+.idea/
+.vscode/
+.DS_Store

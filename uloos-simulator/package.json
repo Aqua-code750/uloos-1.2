@@ -1,0 +1,9 @@
+{
+  "name": "uloos-simulator",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx vite --port 3000 --open",
+    "dev": "npx vite --port 3000 --open",
+    "build": "npx vite build"
+  }
+}

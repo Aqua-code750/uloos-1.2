@@ -1,0 +1,9 @@
+{
+  "name": "uloos-download-center",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx -y vite --port 4000 --open",
+    "dev": "npx -y vite --port 4000 --open",
+    "build": "npx -y vite build"
+  }
+}

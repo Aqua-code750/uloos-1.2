@@ -1,0 +1,869 @@
+/* ==========================================================================
+   UloOS Web Design System - Pure CSS Retro-Modern Paradigm
+   ========================================================================== */
+
+:root {
+    --bg-dark: #07090e;
+    --bg-panel: rgba(13, 17, 28, 0.7);
+    --border-glass: rgba(0, 242, 254, 0.15);
+    
+    /* Harmonious Teal Neon Gradient Colors */
+    --primary-hsl: 182, 100%, 50%;
+    --primary: hsl(var(--primary-hsl));
+    --primary-glow: hsla(var(--primary-hsl), 0.4);
+    
+    --secondary-hsl: 200, 100%, 50%;
+    --secondary: hsl(var(--secondary-hsl));
+    --secondary-glow: hsla(var(--secondary-hsl), 0.4);
+
+    --accent-hsl: 280, 100%, 60%;
+    --accent: hsl(var(--accent-hsl));
+
+    --text-main: #f0f3f8;
+    --text-muted: #8b9bb4;
+    
+    --vga-teal: #008080;
+    --vga-gray: #c0c0c0;
+    --vga-dark-gray: #808080;
+    --vga-blue: #000080;
+    
+    --font-outfit: 'Outfit', sans-serif;
+    --font-fira: 'Fira Code', monospace;
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reset & Scrollbar */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-outfit);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 242, 254, 0.2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Grid background animation */
+.grid-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: -1;
+    pointer-events: none;
+    animation: gridScroll 20s linear infinite;
+}
+
+@keyframes gridScroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 40px; }
+}
+
+/* Header */
+.main-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7, 9, 14, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--text-main);
+}
+
+.logo-retro {
+    font-family: var(--font-fira);
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.5px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.5rem;
+    background: rgba(0, 242, 254, 0.15);
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    color: var(--primary);
+    margin-left: 0.3rem;
+    vertical-align: middle;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: var(--transition-smooth);
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+    text-shadow: 0 0 5px var(--primary-glow);
+}
+
+.nav-btn {
+    padding: 0.5rem 1.2rem;
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    color: var(--primary) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+}
+
+.nav-btn:hover {
+    background: var(--primary) !important;
+    color: var(--bg-dark) !important;
+    box-shadow: 0 0 20px var(--primary-glow) !important;
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.tagline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-fira);
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+}
+
+.hero-title {
+    font-size: 4rem;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(0, 242, 254, 0.1);
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--bg-dark);
+    box-shadow: 0 0 25px var(--primary-glow);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 35px var(--primary);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Vintage CRT Monitor chassis */
+.hero-visual {
+    display: flex;
+    justify-content: center;
+}
+
+.vintage-monitor {
+    background: #181d28;
+    border-radius: 20px;
+    padding: 24px;
+    border: 4px solid #2d384c;
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        inset 0 2px 10px rgba(255, 255, 255, 0.1);
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+}
+
+.vintage-monitor::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 10%;
+    width: 80%;
+    height: 15px;
+    background: #0d1117;
+    border-radius: 0 0 20px 20px;
+    z-index: -1;
+}
+
+.monitor-screen {
+    background: #000;
+    border-radius: 12px;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    border: 10px solid #11151f;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
+}
+
+/* Scanlines overlay effect */
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    ), linear-gradient(
+        90deg, 
+        rgba(255, 0, 0, 0.06), 
+        rgba(0, 255, 0, 0.02), 
+        rgba(0, 0, 255, 0.06)
+    );
+    background-size: 100% 4px, 6px 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Boot Terminal */
+.boot-terminal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-fira);
+    color: #39ff14; /* Retro Green terminal screen color */
+    text-shadow: 0 0 5px rgba(57, 255, 20, 0.4);
+    padding: 10px;
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27c93f; }
+
+.terminal-title {
+    font-size: 0.65rem;
+    color: rgba(57, 255, 20, 0.6);
+    margin-left: 5px;
+}
+
+.terminal-body {
+    flex: 1;
+    font-size: 0.7rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.text-dim {
+    color: rgba(57, 255, 20, 0.6);
+}
+
+.text-blue {
+    color: #00f2fe;
+    text-shadow: 0 0 5px rgba(0, 242, 254, 0.4);
+}
+
+.boot-btn {
+    background: transparent;
+    border: 1px solid #39ff14;
+    color: #39ff14;
+    padding: 4px 10px;
+    font-family: var(--font-fira);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-shadow: 0 0 5px rgba(57, 255, 20, 0.4);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+    transition: var(--transition-smooth);
+}
+
+.boot-btn:hover {
+    background: #39ff14;
+    color: #000;
+    box-shadow: 0 0 15px #39ff14;
+}
+
+/* Mock graphical Desktop */
+.mock-desktop {
+    width: 100%;
+    height: 100%;
+    background-color: var(--vga-teal);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.mock-desktop.hidden {
+    display: none;
+}
+
+.desktop-workspace {
+    flex: 1;
+    padding: 10px;
+    position: relative;
+}
+
+.shortcut-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mock-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-outfit);
+    font-size: 0.5rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Micro-icons drawings inside HTML mock */
+.icon-files { width: 10px; height: 8px; background: #fff; border: 1px solid #000; position: relative; }
+.icon-dos { width: 10px; height: 8px; background: #000; border: 1px solid #c0c0c0; }
+.icon-write { width: 8px; height: 10px; background: #fff; border: 1px solid #000; }
+.icon-store { width: 8px; height: 8px; background: #ffd700; border: 1px solid #000; }
+
+.desktop-message {
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    background: var(--vga-gray);
+    border: 2px solid #fff;
+    border-right-color: var(--vga-dark-gray);
+    border-bottom-color: var(--vga-dark-gray);
+    padding: 10px;
+    width: 160px;
+    font-family: var(--font-outfit);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.desktop-message h3 {
+    font-size: 0.65rem;
+    background: var(--vga-blue);
+    color: #fff;
+    padding: 2px 4px;
+    margin-bottom: 6px;
+}
+
+.desktop-message p {
+    font-size: 0.5rem;
+    color: #000;
+    margin-bottom: 6px;
+}
+
+.btn-reset {
+    font-family: var(--font-outfit);
+    font-size: 0.5rem;
+    padding: 2px 6px;
+    background: var(--vga-gray);
+    border: 2px solid #fff;
+    border-right-color: var(--vga-dark-gray);
+    border-bottom-color: var(--vga-dark-gray);
+    cursor: pointer;
+}
+
+.btn-reset:active {
+    border: 2px solid var(--vga-dark-gray);
+    border-right-color: #fff;
+    border-bottom-color: #fff;
+}
+
+.mock-cursor {
+    width: 6px;
+    height: 8px;
+    background: #fff;
+    border: 1px solid #000;
+    position: absolute;
+    top: 50px;
+    left: 80px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.desktop-taskbar {
+    height: 20px;
+    background: var(--vga-gray);
+    border-top: 2px solid #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    font-family: var(--font-outfit);
+}
+
+.taskbar-start {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #000;
+    border: 1.5px solid #fff;
+    border-right-color: var(--vga-dark-gray);
+    border-bottom-color: var(--vga-dark-gray);
+    padding: 1px 4px;
+    cursor: pointer;
+}
+
+.taskbar-clock {
+    font-size: 0.5rem;
+    color: #000;
+    border: 1.5px solid var(--vga-dark-gray);
+    border-right-color: #fff;
+    border-bottom-color: #fff;
+    padding: 1px 4px;
+}
+
+/* Features Grid */
+.features-section {
+    padding: 8rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    text-align: center;
+    margin-bottom: 0.8rem;
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 4rem auto;
+    font-size: 1.1rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+/* Premium Glass Cards styling */
+.glass-card {
+    background: var(--bg-panel);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 2.5rem;
+    transition: var(--transition-smooth);
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 242, 254, 0.4);
+    box-shadow: 
+        0 10px 30px rgba(0, 242, 254, 0.05),
+        inset 0 0 20px rgba(0, 242, 254, 0.03);
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+}
+
+.glass-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+}
+
+.glass-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Specs Comparison Section */
+.comparison-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid var(--border-glass);
+}
+
+.comparison-table-wrapper {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 2rem;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 1.05rem;
+}
+
+.comparison-table th, 
+.comparison-table td {
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid rgba(0, 242, 254, 0.08);
+}
+
+.comparison-table th {
+    background: rgba(0, 242, 254, 0.03);
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.comparison-table td {
+    color: var(--text-muted);
+}
+
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+
+.comparison-table .highlight {
+    background: rgba(0, 242, 254, 0.04);
+    color: var(--primary);
+    font-weight: 600;
+    border-left: 1.5px solid var(--border-glass);
+    border-right: 1.5px solid var(--border-glass);
+}
+
+/* Download Section */
+.download-section {
+    padding: 8rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.download-card {
+    background: linear-gradient(180deg, rgba(13, 17, 28, 0.9) 0%, rgba(7, 9, 14, 0.95) 100%);
+    border: 1px solid var(--border-glass);
+    border-radius: 24px;
+    padding: 4rem;
+    box-shadow: 
+        0 40px 80px rgba(0, 0, 0, 0.5),
+        0 0 50px rgba(0, 242, 254, 0.03);
+}
+
+.download-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.download-header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.download-header p {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.download-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+}
+
+.option-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.option-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.option-card h3 i {
+    color: var(--primary);
+}
+
+.file-name {
+    font-family: var(--font-fira);
+    font-size: 0.9rem;
+    color: var(--text-main);
+    background: rgba(0, 242, 254, 0.05);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    border: 1px dashed var(--border-glass);
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    align-self: flex-start;
+}
+
+.file-size {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.option-card .btn {
+    margin-top: auto;
+    width: 100%;
+    justify-content: center;
+}
+
+/* Clipboard Command container */
+.command-box {
+    display: flex;
+    background: #04060a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.4rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.command-box code {
+    font-family: var(--font-fira);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    padding: 0 0.8rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.copy-btn {
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid var(--border-glass);
+    color: var(--primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-family: var(--font-outfit);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.copy-btn:hover {
+    background: var(--primary);
+    color: var(--bg-dark);
+}
+
+/* Accordion Step List styling */
+.instructions-accordion {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 3rem;
+}
+
+.instructions-accordion h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.instruction-step {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.step-num {
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 242, 254, 0.15);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.instruction-step p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.instruction-step strong {
+    color: var(--text-main);
+}
+
+/* Footer styling */
+.main-footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    background: #04060a;
+}
+
+.main-footer p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+    }
+    .hero-description {
+        margin: 0 auto 2.5rem auto;
+    }
+    .hero-actions {
+        justify-content: center;
+    }
+    .download-options {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .hero-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .nav-links {
+        display: none; /* Hide standard links on very small mobile viewports */
+    }
+    .download-card {
+        padding: 2rem;
+    }
+}
