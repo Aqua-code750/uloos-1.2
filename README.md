@@ -2,7 +2,7 @@
 
 UloOS is a minimal, beginner-friendly Operating System written completely in **Nightly Rust** for x86_64 hardware. It boots on bare-metal and runs directly inside **QEMU**.
 
-There is **no HTML, CSS, or JavaScript**. Everything—including the core systems, keyboard drivers, shell interpreter, window/state buffers, office suite, file system, and interactive DOOM minigame—is implemented in pure, bare-metal Rust code.
+There is **HTML for the ui**. Everything—including the core systems, keyboard drivers, shell interpreter, window/state buffers, office suite, file system, and interactive DOOM minigame—is implemented in pure, bare-metal Rust code.
 
 ---
 
@@ -38,7 +38,7 @@ You can switch between applications instantly by pressing keys **F1 through F8**
    - Move your character `(ToT)` around the room using keys **W, A, S, D**.
    - Shoot monsters (`E`) in your line of sight by pressing **Space**.
    - Track health, ammunition count, and high scores.
-
+*Note: The F1 - F8 key features is discontinued and will not be added in this version*
 ---
 
 ## How to Build and Run UloOS on QEMU
@@ -57,3 +57,6 @@ You can switch between applications instantly by pressing keys **F1 through F8**
    cargo run
    ```
    *Cargo compiles the kernel and runs the bootable ISO directly inside QEMU!*
+
+
+REALEASING ON 29TH OR 30TH WHEREVER U ARE! ON THAT DATE IS RELEASED
