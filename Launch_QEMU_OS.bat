@@ -9,13 +9,13 @@ set "BIN_PATH=%~dp0uloos-kernel\target\x86_64-unknown-none\debug\bootimage-uloos
 set "QEMU_PATH=C:\Program Files\qemu\qemu-system-x86_64.exe"
 
 if exist "%BIN_PATH%" (
-    echo [System] Found compiled binary, launching directly via QEMU...
-    "%QEMU_PATH%" -drive format=raw,file="%BIN_PATH%" -full-screen
-) else (
-    echo [System] Compiled binary not found, falling back to cargo run...
-    cd /d "%~dp0uloos-kernel"
-    cargo run
+    echo [System] Cleaning stale binary to force fresh build...
+    del /f /q "%BIN_PATH%" >nul 2>&1
 )
+
+echo [System] Rebuilding Rust kernel and booting QEMU...
+cd /d "%~dp0uloos-kernel"
+cargo run
 
 if %errorlevel% neq 0 (
     echo.

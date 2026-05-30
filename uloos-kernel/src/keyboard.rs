@@ -15,6 +15,8 @@ pub enum DecodedKey {
     Ascii(char),
     Backspace,
     Enter,
+    Escape,
+    Tab,
     F1, F2, F3, F4, F5, F6, F7, F8,
 }
 
@@ -46,7 +48,9 @@ pub fn get_key() -> Option<DecodedKey> {
             }
 
             return match scancode {
+                0x01 => Some(DecodedKey::Escape),
                 0x0E => Some(DecodedKey::Backspace),
+                0x0F => Some(DecodedKey::Tab),
                 0x1C => Some(DecodedKey::Enter),
                 0x39 => Some(DecodedKey::Ascii(' ')),
                 0x3B => Some(DecodedKey::F1),

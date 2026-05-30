@@ -13,6 +13,10 @@
   <!-- FontAwesome Icons for premium visual styling -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- JS-DOS v7 Engine for full playable Ultimate DOOM & DOOM II -->
+  <link href="https://js-dos.com/v7/build/releases/latest/js-dos/js-dos.css" rel="stylesheet">
+  <script src="https://js-dos.com/v7/build/releases/latest/js-dos/js-dos.js"></script>
+
   <style>
     :root {
       --bg-dark: #080b16;
@@ -240,7 +244,7 @@
     .shortcut.doom i { color: #f43f5e; }
     .shortcut.bash i { color: #eab308; }
     .shortcut.explorer i { color: #3b82f6; }
-    .shortcut.browser i { color: #06b6d4; }
+    .shortcut.browser i { color: #22c55e; }
     .shortcut.code i { color: #8b5cf6; }
     .shortcut.text i { color: #3b82f6; }
     .shortcut.slides i { color: #f97316; }
@@ -408,6 +412,150 @@
       transform: scale(1.15) rotate(90deg);
       color: var(--accent-purple);
       text-shadow: 0 0 15px var(--accent-purple);
+    }
+
+    /* AI Assistant Drawer & Copilot Styles */
+    .copilot-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #a855f7 0%, #00f0ff 100%);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .copilot-btn:hover {
+      transform: scale(1.15) rotate(15deg);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+    }
+
+    .ai-companion-drawer {
+      position: absolute;
+      top: 48px;
+      right: -360px; /* Hidden by default */
+      width: 340px;
+      height: calc(100% - 110px);
+      background: rgba(8, 11, 22, 0.85);
+      backdrop-filter: blur(var(--blur-val));
+      -webkit-backdrop-filter: blur(var(--blur-val));
+      border-left: 1px solid var(--glass-border);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      border-radius: 20px 0 0 20px;
+      box-shadow: -15px 0 40px rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: right 0.45s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    .ai-companion-drawer.open {
+      right: 0;
+    }
+
+    .ai-header {
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.25);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ai-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-chat-area {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 11px;
+      line-height: 1.5;
+      font-family: inherit;
+    }
+
+    .chat-bubble.ai {
+      background: rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .chat-bubble.user {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(0, 240, 255, 0.25) 100%);
+      color: #f8fafc;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      border: 1px solid rgba(0, 240, 255, 0.15);
+    }
+
+    .ai-input-area {
+      padding: 12px 15px;
+      background: rgba(0, 0, 0, 0.15);
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      gap: 8px;
+    }
+
+    .ai-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 8px 16px;
+      color: #fff;
+      font-size: 11px;
+      outline: none;
+    }
+
+    .ai-suggestions-panel {
+      padding: 8px 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      border-top: 1px solid rgba(255,255,255,0.03);
+      background: rgba(0,0,0,0.1);
+    }
+
+    .ai-suggestion-chip {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 9px;
+      color: var(--accent-color);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ai-suggestion-chip:hover {
+      background: var(--glass-bg-hover);
+      transform: translateY(-1px);
     }
 
     .taskbar-apps {
@@ -608,50 +756,185 @@
       display: flex;
       height: 100%;
       width: 100%;
+      background: #181824;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .ide-activitybar {
+      width: 48px;
+      background: #0e0f16;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 20px;
+    }
+
+    .activity-icon {
+      font-size: 18px;
+      color: #64748b;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      padding: 8px 0;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .activity-icon:hover {
+      color: #cbd5e1;
+    }
+
+    .activity-icon.active {
+      color: var(--accent-color);
+    }
+
+    .activity-icon.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15%;
+      height: 70%;
+      width: 3px;
+      background: var(--accent-color);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 10px var(--accent-color);
     }
 
     .ide-sidebar {
-      width: 180px;
-      background: rgba(10, 12, 22, 0.5);
-      border-right: 1px solid var(--glass-border);
+      width: 170px;
+      background: #11131c;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       flex-direction: column;
-      padding: 15px;
-      gap: 10px;
+      padding: 12px;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .ide-sidebar-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
     }
 
     .ide-editor-container {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #090b14;
-      border-right: 1px solid var(--glass-border);
+      background: #151722;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .ide-tab-bar {
+      display: flex;
+      background: #0e0f16;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      overflow-x: auto;
+      gap: 2px;
+    }
+
+    .ide-tab-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ide-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #11131c;
+      border-right: 1px solid rgba(255, 255, 255, 0.03);
+      border-top: 2px solid transparent;
+      color: #64748b;
+      font-size: 11px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.25s;
+    }
+
+    .ide-tab.active {
+      background: #151722;
+      color: #f1f5f9;
+      border-top: 2px solid var(--accent-color);
+      font-weight: 500;
+    }
+
+    .ide-tab-close {
+      font-size: 8px;
+      opacity: 0.4;
+      transition: all 0.2s;
+    }
+
+    .ide-tab-close:hover {
+      opacity: 1;
+      color: #ef4444;
     }
 
     .ide-header {
-      padding: 8px 15px;
-      background: rgba(0, 0, 0, 0.3);
-      border-bottom: 1px solid var(--glass-border);
+      padding: 8px 12px;
+      background: #131520;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .ide-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      border-radius: 4px;
-      color: #fff;
-      font-size: 11px;
-      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      color: #cbd5e1;
+      font-size: 10px;
+      padding: 4px 10px;
       cursor: pointer;
-      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.25s;
     }
 
     .ide-btn:hover {
       background: var(--accent-color);
-      color: #000;
-      box-shadow: 0 0 10px var(--accent-color);
+      color: #07080e;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.35);
+      border-color: var(--accent-color);
+    }
+
+    .ide-editor-workspace {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      background: #151722;
+    }
+
+    .ide-line-gutter {
+      width: 38px;
+      padding: 15px 0;
+      text-align: right;
+      padding-right: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      color: #4b5563;
+      background: #0f1017;
+      border-right: 1px solid rgba(255, 255, 255, 0.03);
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .ide-line-gutter div {
+      line-height: 1.5;
+      height: 16.5px;
+    }
+
+    .ide-editor-viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
     }
 
     .ide-textarea-wrapper {
@@ -661,34 +944,70 @@
     }
 
     .ide-textarea {
-      flex: 1;
+      width: 100%;
+      height: 100%;
       background: transparent;
       border: none;
       outline: none;
-      color: #79f2c3;
+      color: transparent; /* Text is transparent because we draw highlighted syntax under/over it! */
+      caret-color: #00f0ff; /* Keep cursor fully visible */
       font-family: 'Fira Code', monospace;
-      font-size: 12px;
+      font-size: 11px;
       padding: 15px;
       resize: none;
       line-height: 1.5;
+      white-space: pre;
+      overflow: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
     }
 
+    .ide-syntax-overlay {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 15px;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: pre;
+      color: #94a3b8;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Syntax Tokens for VS Code Dracula theme preset */
+    .token-keyword { color: #ff79c6; font-weight: bold; }
+    .token-string { color: #f1fa8c; }
+    .token-comment { color: #6272a4; font-style: italic; }
+    .token-number { color: #bd93f9; }
+    .token-tag { color: #8be9fd; }
+    .token-attr { color: #50fa7b; }
+    .token-function { color: #50fa7b; }
+
     .ide-preview-pane {
-      width: 320px;
-      background: #fff;
+      width: 340px;
+      background: #0f1015;
       display: flex;
       flex-direction: column;
+      border-left: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .preview-header {
-      padding: 8px 15px;
-      background: #e2e8f0;
-      color: #475569;
-      font-size: 11px;
+      padding: 8px 12px;
+      background: #11131c;
+      color: #94a3b8;
+      font-size: 10px;
       font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .preview-iframe {
@@ -696,6 +1015,54 @@
       width: 100%;
       border: none;
       background: #ffffff;
+    }
+
+    .ide-console-panel {
+      height: 160px;
+      background: #0d0e14;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ide-console-header {
+      padding: 6px 12px;
+      background: #0a0b0f;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9px;
+      color: #64748b;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .ide-console-output {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 10px;
+      color: #34d399; /* Mint log color */
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .ide-status-bar {
+      height: 22px;
+      background: #8b5cf6; /* Sleek vscode indigo status bar */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 10px;
+      color: #fff;
+      font-family: inherit;
+    }
+
+    .ide-status-left, .ide-status-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     /* Web Browser with Real Mock Tab Engine */
@@ -940,7 +1307,19 @@
       50% { transform: translateY(-8px) rotate(2deg); }
       100% { transform: translateY(0px) rotate(0deg); }
     }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.97); }
+    }
+    @keyframes loading-progress {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(0%); }
+      100% { transform: translateX(100%); }
+    }
   </style>
+  <!-- Load js-dos v7 from CDN -->
+  <link href="https://js-dos.com/v7/build/releases/latest/js-dos.css" rel="stylesheet">
+  <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
 </head>
 <body>
 
@@ -974,6 +1353,26 @@
     <!-- Desktop Area -->
     <div id="desktop" style="display:none;">
       
+      <!-- Universal UloOS AI Companion (Copilot Drawer) -->
+      <div class="ai-companion-drawer" id="ai-companion-drawer">
+        <div class="ai-header">
+          <div class="ai-title"><i class="fa-solid fa-robot" style="color:#00f0ff; animation: pulse 2s infinite;"></i> UloOS Copilot AI</div>
+          <i class="fa-solid fa-xmark" onclick="toggleAiCompanion()" style="cursor:pointer; color:#64748b; font-size:14px;"></i>
+        </div>
+        <div class="ai-chat-area" id="ai-chat-area">
+          <div class="chat-bubble ai">
+            🤖 Hello! I am the <strong>UloOS Copilot AI</strong>. I am available anytime to help you write code, explain shell commands, manage VFS files, publish apps, or personalize your interface. How can I help you today?
+          </div>
+        </div>
+        <!-- Context-Aware Dynamic Suggestions Panel -->
+        <div class="ai-suggestions-panel" id="ai-suggestions-panel">
+          <!-- Populated dynamically based on active app -->
+        </div>
+        <div class="ai-input-area">
+          <input type="text" class="ai-input" id="ai-chat-input" placeholder="Ask Copilot anything..." onkeydown="handleAiInputKey(event)">
+          <button class="ide-btn" onclick="sendAiMessage()" style="border-radius:18px; padding: 6px 12px; background:var(--accent-color); color:#000; border-color:var(--accent-color);"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </div>
       <!-- Desktop Pinned Shortcuts -->
       <div class="desktop-shortcuts" id="shortcuts-grid">
         <div class="shortcut explorer" onclick="openWindow('win-explorer')">
@@ -985,8 +1384,8 @@
           <span>UloCode IDE</span>
         </div>
         <div class="shortcut browser" onclick="openWindow('win-browser')">
-          <i class="fa-solid fa-compass"></i>
-          <span>UloBrowser</span>
+          <i class="fa-brands fa-chrome" style="color: #22c55e;"></i>
+          <span>Chrome</span>
         </div>
         <div class="shortcut text" onclick="openWindow('win-text')">
           <i class="fa-solid fa-file-lines"></i>
@@ -1077,32 +1476,161 @@
         </div>
         <div class="window-body">
           <div class="ide-layout">
-            <div class="ide-sidebar">
-              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">WORKSPACE FILES</div>
-              <div id="ide-file-tree" style="display:flex; flex-direction:column; gap:4px;">
-                <!-- Managed files -->
+            <!-- 1. VS Code Activity Bar (Leftmost) -->
+            <div class="ide-activitybar">
+              <div class="activity-icon active" id="activity-btn-explorer" onclick="changeIdeSidebarView('explorer')">
+                <i class="fa-solid fa-files"></i>
+              </div>
+              <div class="activity-icon" id="activity-btn-search" onclick="changeIdeSidebarView('search')">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+              <div class="activity-icon" id="activity-btn-git" onclick="changeIdeSidebarView('git')">
+                <i class="fa-solid fa-code-branch"></i>
+              </div>
+              <div class="activity-icon" id="activity-btn-extensions" onclick="changeIdeSidebarView('extensions')">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+              <div class="activity-icon" id="activity-btn-settings" onclick="changeIdeSidebarView('settings')">
+                <i class="fa-solid fa-gear"></i>
               </div>
             </div>
+
+            <!-- 2. VS Code Sidebar -->
+            <div class="ide-sidebar">
+              <!-- Explorer View (Default) -->
+              <div id="ide-panel-explorer" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="ide-sidebar-title">VFS Explorer</div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 4px; cursor: pointer;" onclick="toggleIdeFolders()">
+                  <i class="fa-solid fa-chevron-down" id="ide-folder-chevron"></i> 📁 PROJECTS
+                </div>
+                <div id="ide-file-tree" style="display:flex; flex-direction:column; gap:4px; padding-left: 8px;">
+                  <!-- Managed files -->
+                </div>
+              </div>
+
+              <!-- Search View -->
+              <div id="ide-panel-search" style="display: none; flex-direction: column; gap: 8px;">
+                <div class="ide-sidebar-title">Search & Replace</div>
+                <input type="text" id="ide-search-input" placeholder="Search string..." oninput="triggerIdeSearch()" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 4px; padding: 4px 8px; color: #fff; font-size: 11px; outline: none;">
+                <input type="text" id="ide-replace-input" placeholder="Replace with..." style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 4px; padding: 4px 8px; color: #fff; font-size: 11px; outline: none; margin-top: 2px;">
+                <button class="ide-btn" onclick="triggerIdeReplaceAll()" style="margin-top: 4px; justify-content: center;"><i class="fa-solid fa-arrows-spin"></i> Replace All</button>
+                <div id="ide-search-results" style="font-size: 10px; color: var(--text-muted); margin-top: 8px; max-height: 180px; overflow-y: auto;">
+                  Type to search workspace...
+                </div>
+              </div>
+
+              <!-- Git View -->
+              <div id="ide-panel-git" style="display: none; flex-direction: column; gap: 8px;">
+                <div class="ide-sidebar-title">Source Control</div>
+                <div style="font-size: 11px; color: #a7f3d0; margin-bottom: 4px;"><i class="fa-solid fa-code-commit"></i> VFS Repository</div>
+                <div id="ide-git-changes-list" style="font-size: 10px; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto;">
+                  No unstaged modifications
+                </div>
+                <button class="ide-btn" onclick="commitIdeChanges()" style="margin-top: 6px; background: rgba(16,185,129,0.25); border-color:#10b981; color:#a7f3d0; justify-content: center;"><i class="fa-solid fa-circle-check"></i> Commit Changes</button>
+              </div>
+
+              <!-- Extensions View -->
+              <div id="ide-panel-extensions" style="display: none; flex-direction: column; gap: 8px;">
+                <div class="ide-sidebar-title">Extensions</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <div style="background:rgba(255,255,255,0.03); padding:6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:11px; font-weight:600; color:#fff;">Copilot Mini</div>
+                    <div style="font-size:9px; color:var(--text-muted);">AI Autocomplete engine</div>
+                    <span style="font-size:8px; color:#10b981;">● Enabled</span>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.03); padding:6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:11px; font-weight:600; color:#fff;">Rust Analyzer</div>
+                    <div style="font-size:9px; color:var(--text-muted);">Code intelligence helper</div>
+                    <span style="font-size:8px; color:#10b981;">● Active</span>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.03); padding:6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:11px; font-weight:600; color:#fff;">Prettier Formatter</div>
+                    <div style="font-size:9px; color:var(--text-muted);">One-click neat styling</div>
+                    <span style="font-size:8px; color:#64748b;">● Installed</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Settings (Themes) View -->
+              <div id="ide-panel-settings" style="display: none; flex-direction: column; gap: 8px;">
+                <div class="ide-sidebar-title">IDE Settings</div>
+                <div style="font-size:11px; color:#fff; margin-bottom:4px;">Editor Color Theme:</div>
+                <select id="ide-theme-select" onchange="changeIdeTheme()" style="background: #1e293b; border: 1px solid var(--glass-border); border-radius: 4px; padding: 4px; color: #fff; font-size: 11px; cursor: pointer; outline: none; width: 100%;">
+                  <option value="dracula">🧛 Dracula (Default)</option>
+                  <option value="monokai">🌴 Monokai Classic</option>
+                  <option value="onedark">🕶️ One Dark</option>
+                  <option value="synthwave">🌆 Synthwave '84</option>
+                  <option value="github-light">☀️ GitHub Light</option>
+                </select>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:8px;">
+                  Toggle settings to customize your developer workspace.
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Editor Workspace with Tabs -->
             <div class="ide-editor-container">
+              <!-- Horizontal Workspace Tabs Bar -->
+              <div class="ide-tab-bar" id="ide-tabs-container">
+                <!-- Spawns tabs dynamically -->
+              </div>
+
+              <!-- Toolbar Header -->
               <div class="ide-header">
-                <div style="font-size:11px;" id="ide-active-file-label">editing: index.html</div>
-                <div style="display:flex; gap:8px;">
+                <div style="font-size:10px; color:var(--accent-color); font-family:'Fira Code', monospace; display:flex; align-items:center; gap:6px;" id="ide-active-file-label">
+                  <i class="fa-solid fa-code"></i> editing: App_Template.html
+                </div>
+                <div style="display:flex; gap:6px;">
                   <button class="ide-btn" onclick="runIdeCode()"><i class="fa-solid fa-play"></i> Run Preview</button>
                   <button class="ide-btn" onclick="saveIdeCode()"><i class="fa-solid fa-floppy-disk"></i> Save Code</button>
-                  <button class="ide-btn" onclick="downloadIdeCode()" style="background:rgba(139,92,246,0.35); border:1px solid #8b5cf6;"><i class="fa-solid fa-download"></i> Download to PC</button>
                   <button class="ide-btn" onclick="publishIdeCode()"><i class="fa-solid fa-circle-arrow-up"></i> Publish App</button>
                 </div>
               </div>
-              <div class="ide-textarea-wrapper">
-                <textarea class="ide-textarea" id="ide-code-textarea" oninput="updateLineNumbers()"></textarea>
+
+              <!-- Textarea and Scrolling Line Number Gutter Wrapper -->
+              <div class="ide-editor-workspace">
+                <div class="ide-line-gutter" id="ide-line-gutter">
+                  <!-- Spawns 1 to 50 numbers dynamically -->
+                </div>
+                <div class="ide-editor-viewport" style="position:relative; width:100%; height:100%;">
+                  <!-- Background highlight rendering overlay -->
+                  <pre class="ide-syntax-overlay" id="ide-syntax-overlay"></pre>
+                  <!-- Real Textarea sitting precisely over it with transparent text -->
+                  <textarea class="ide-textarea" id="ide-code-textarea" oninput="handleIdeEditorInput()" onscroll="syncEditorScroll()"></textarea>
+                </div>
+              </div>
+
+              <!-- Integrated Status Bar -->
+              <div class="ide-status-bar" id="ide-status-bar">
+                <div class="ide-status-left">
+                  <span><i class="fa-solid fa-code-branch"></i> <strong style="color:#00f0ff;">ulo-main</strong></span>
+                  <span>● Syncing with VFS</span>
+                </div>
+                <div class="ide-status-right">
+                  <span style="cursor:pointer;" onclick="triggerCodeFormatting()"><i class="fa-solid fa-wand-magic-sparkles"></i> Format Code</span>
+                  <span id="ide-cursor-info">Ln 1, Col 1</span>
+                  <span>UTF-8</span>
+                  <span id="ide-lang-info">HTML5</span>
+                </div>
               </div>
             </div>
+
+            <!-- 4. Interactive Live Preview + Debug Console Terminal -->
             <div class="ide-preview-pane">
               <div class="preview-header">
-                <span><i class="fa-solid fa-circle-play"></i> Sandboxed Frame</span>
-                <span id="preview-status" style="font-size:9px; color:#10b981;">Online</span>
+                <span><i class="fa-solid fa-circle-play"></i> Live Sandboxed Preview</span>
+                <span id="preview-status" style="font-size:9px; color:#10b981; display:flex; align-items:center; gap:4px;"><span class="status-dot" style="box-shadow:none; width:6px; height:6px;"></span> Active</span>
               </div>
               <iframe id="ide-sandbox-iframe" class="preview-iframe"></iframe>
+
+              <!-- Debug Console Panel -->
+              <div class="ide-console-panel">
+                <div class="ide-console-header">
+                  <span><i class="fa-solid fa-terminal"></i> Console Logs Terminal</span>
+                  <button class="ide-btn" onclick="clearIdeConsole()" style="padding: 2px 8px; font-size: 8px; background:transparent;"><i class="fa-solid fa-eraser"></i> Clear</button>
+                </div>
+                <div class="ide-console-output" id="ide-console-output">UloCode Debug Terminal. Listening for logs...</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1111,7 +1639,7 @@
       <!-- WEB BROWSER WINDOW -->
       <div id="win-browser" class="window">
         <div class="window-header">
-          <div class="window-title"><i class="fa-solid fa-compass" style="color: #06b6d4;"></i> UloBrowser</div>
+          <div class="window-title"><i class="fa-brands fa-chrome" style="color: #22c55e;"></i> Google Chrome Sandbox</div>
           <div class="window-controls">
             <div class="control-dot dot-minimize" onclick="minimizeWindow('win-browser')"></div>
             <div class="control-dot dot-maximize" onclick="maximizeWindow('win-browser')"></div>
@@ -1128,12 +1656,12 @@
             <i class="fa-solid fa-rotate-right" onclick="reloadActiveTab()" style="cursor:pointer; opacity:0.7;"></i>
             
             <select id="browser-mode-select" onchange="changeBrowserMode()" style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 8px; padding: 3px 8px; color: #fff; font-size: 10px; cursor: pointer; outline: none; font-family: inherit;">
+              <option value="chrome" style="background:#1e293b; color:#fff;">🌐 Chrome (Real Google)</option>
               <option value="sandbox" style="background:#1e293b; color:#fff;">🖥️ Sandbox Mode</option>
               <option value="firefox" style="background:#1e293b; color:#fff;">🦊 Firefox Proxy</option>
-              <option value="chrome" style="background:#1e293b; color:#fff;">🌐 Chrome (Real Google)</option>
             </select>
 
-            <input type="text" class="browser-address" id="browser-url-bar" value="https://google.com" onkeydown="handleBrowserUrl(event)" style="flex:1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px 12px; color: #fff; font-size: 11px; outline:none;">
+            <input type="text" class="browser-address" id="browser-url-bar" value="https://www.google.com/search?igu=1" onkeydown="handleBrowserUrl(event)" style="flex:1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px 12px; color: #fff; font-size: 11px; outline:none;">
           </div>
           <div class="window-body" style="background:#fff;" id="browser-iframe-container">
             <!-- Active Tab Sandbox Frame -->
@@ -1191,7 +1719,7 @@
       </div>
 
       <!-- DOOM WINDOW -->
-      <div id="win-doom" class="window">
+      <div id="win-doom" class="window" style="width: 720px; height: 520px;">
         <div class="window-header">
           <div class="window-title"><i class="fa-solid fa-skull" style="color: #f43f5e;"></i> DOOM Classic</div>
           <div class="window-controls">
@@ -1200,8 +1728,24 @@
             <div class="control-dot dot-close" onclick="closeWindow('win-doom')"></div>
           </div>
         </div>
-        <div class="window-body">
-          <iframe src="https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos" style="width: 100%; height: 100%; border: none;"></iframe>
+        <div class="window-body" style="background:#000; overflow:hidden; position:relative; display:flex; flex-direction:column; height:calc(100% - 36px);">
+          <!-- Doom Action Controls -->
+          <div id="doom-controls" style="background:#111; border-bottom:1px solid #22c55e; padding:6px 12px; display:flex; justify-content:space-between; align-items:center; font-family:'Courier New', monospace; font-size:11px; color:#22c55e;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span><i class="fa-solid fa-terminal"></i> STATUS: <strong id="doom-status-label" style="color:#eab308;">STANDBY</strong></span>
+              <span style="opacity:0.5;">|</span>
+              <span>GAME:</span>
+              <select id="doom-version-select" onchange="changeDoomVersion(this.value)" style="background:#222; border:1px solid #22c55e; border-radius:4px; padding:2px 6px; color:#22c55e; font-family:inherit; font-size:10px; outline:none; cursor:pointer;">
+                <option value="doom1" selected>Ultimate DOOM (Local Classic Episodes)</option>
+                <option value="doom2">DOOM II: Hell on Earth (Online Full Game)</option>
+              </select>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button onclick="focusDoomEmulator()" style="background:#22c55e; color:#000; font-family:inherit; font-size:9px; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer;"><i class="fa-solid fa-keyboard"></i> Focus Lock</button>
+              <button onclick="restartDoom()" style="background:#ef4444; color:#fff; font-family:inherit; font-size:9px; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer;"><i class="fa-solid fa-arrows-rotate"></i> Reset Game</button>
+            </div>
+          </div>
+          <div id="jsdos-doom" style="flex:1; width: 100%; height: calc(100% - 27px); outline: none;" tabindex="0"></div>
         </div>
       </div>
 
@@ -1501,7 +2045,7 @@
           <!-- Dynamically populated app items -->
         </div>
         <div class="start-menu-footer">
-          <span onclick="bootOS()" style="cursor:pointer;"><i class="fa-solid fa-power-off" style="color: #ef4444;"></i> Restart OS</span>
+          <span onclick="shutdownOS()" style="cursor:pointer;"><i class="fa-solid fa-power-off" style="color: #ef4444;"></i> Reset UloOS Machine</span>
           <span>UloOS 11 Stable</span>
         </div>
       </div>
@@ -1534,6 +2078,10 @@
       <div id="taskbar">
         <button class="start-button" onclick="toggleStartMenu()">
           <i class="fa-solid fa-wind"></i>
+        </button>
+        <!-- Glowing Copilot Launch Badge -->
+        <button class="copilot-btn" onclick="toggleAiCompanion()" title="UloOS Copilot AI (Win+C)">
+          <i class="fa-solid fa-robot"></i>
         </button>
         <div class="taskbar-apps" id="taskbar-apps-container">
           <div id="task-win-explorer" class="task-icon" onclick="toggleWindowMinimization('win-explorer')">
@@ -1674,7 +2222,7 @@
 
     // Browser Multi-Tabs Engine
     let browserTabs = [
-      { id: 'tab-1', title: 'Google Search', url: 'https://google.com' }
+      { id: 'tab-1', title: 'Chrome Sandbox', url: 'https://www.google.com/search?igu=1' }
     ];
     let activeBrowserTabId = 'tab-1';
 
@@ -1688,7 +2236,7 @@
       loadStoreRegistry();
       document.getElementById('boot-screen').style.display = 'none';
       document.getElementById('desktop').style.display = 'flex';
-      setWallpaper('preset1');
+      setWallpaper('preset2');
       updateClock();
       setInterval(updateClock, 1000);
       
@@ -1703,6 +2251,114 @@
       // Auto-open explorer and browser in Windows 11 center positions
       openWindow('win-code');
       showClippy();
+    }
+
+    // Shutdown simulator trigger with premium glassmorphic overlay and audio chime
+    function shutdownOS() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const playChimeNote = (freq, delay, duration) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + delay);
+          osc.stop(audioCtx.currentTime + delay + duration);
+        };
+        
+        playChimeNote(783.99, 0, 0.4);   // G5
+        playChimeNote(659.25, 0.15, 0.4); // E5
+        playChimeNote(523.25, 0.3, 0.5);  // C5
+        playChimeNote(392.00, 0.45, 0.8); // G4
+      } catch (e) {
+        console.error("Audio Context not supported or allowed yet", e);
+      }
+
+      const startMenu = document.getElementById('start-menu');
+      if (startMenu) startMenu.classList.remove('active');
+
+      let overlay = document.getElementById('shutdown-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'shutdown-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.background = 'rgba(15, 23, 42, 0.7)';
+        overlay.style.backdropFilter = 'blur(20px)';
+        overlay.style.webkitBackdropFilter = 'blur(20px)';
+        overlay.style.display = 'flex';
+        overlay.style.flexDirection = 'column';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = '999999';
+        overlay.style.color = '#fff';
+        overlay.style.fontFamily = "system-ui, -apple-system, sans-serif";
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.5s ease';
+        
+        overlay.innerHTML = `
+          <div style="text-align: center;">
+            <div class="shutdown-spinner" style="
+              width: 50px;
+              height: 50px;
+              border: 3px solid rgba(255,255,255,0.1);
+              border-top: 3px solid #00f0ff;
+              border-radius: 50%;
+              animation: spin 1s linear infinite;
+              margin: 0 auto 20px auto;
+            "></div>
+            <h2 style="font-weight: 300; font-size: 24px; letter-spacing: 1px; margin-bottom: 8px;">Shutting down UloOS Machine</h2>
+            <p style="color: #a1a1aa; font-size: 14px; margin: 0;">Closing all active virtual environments safely...</p>
+          </div>
+        `;
+        
+        if (!document.getElementById('shutdown-spin-style')) {
+          const style = document.createElement('style');
+          style.id = 'shutdown-spin-style';
+          style.innerHTML = `
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(overlay);
+      }
+      
+      overlay.style.display = 'flex';
+      overlay.offsetHeight; // force reflow
+      overlay.style.opacity = '1';
+
+      setTimeout(() => {
+        document.querySelectorAll('.window').forEach(win => {
+          win.style.display = 'none';
+        });
+        
+        const customContainer = document.getElementById('custom-windows-container');
+        if (customContainer) customContainer.innerHTML = '';
+        
+        document.querySelectorAll('.task-icon').forEach(icon => {
+          icon.classList.remove('active');
+        });
+        
+        document.getElementById('desktop').style.display = 'none';
+        
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          document.getElementById('boot-screen').style.display = 'flex';
+        }, 500);
+        
+      }, 1800);
     }
 
     // Dynamic Clock tray updates
@@ -1794,46 +2450,503 @@
     }
 
     // UloCode Developer IDE core logic
+    let ideOpenTabs = [
+      { name: 'App_Template.html', dir: 'projects' }
+    ];
+    let ideOriginalCodes = {}; // For Git diff tracking
+    let ideFolderCollapsed = false;
+
+    // Cache initial code templates for Git diff tracking
+    setTimeout(() => {
+      vfs['projects'].forEach(file => {
+        ideOriginalCodes[file.name] = file.content;
+      });
+    }, 1000);
+
+    function changeIdeSidebarView(view) {
+      // Toggle sidebar panel views
+      const panels = ['explorer', 'search', 'git', 'extensions', 'settings'];
+      panels.forEach(p => {
+        document.getElementById(`ide-panel-${p}`).style.display = p === view ? 'flex' : 'none';
+        document.getElementById(`activity-btn-${p}`).classList.toggle('active', p === view);
+      });
+    }
+
+    function toggleIdeFolders() {
+      ideFolderCollapsed = !ideFolderCollapsed;
+      const fileTree = document.getElementById('ide-file-tree');
+      const chevron = document.getElementById('ide-folder-chevron');
+      if (ideFolderCollapsed) {
+        fileTree.style.display = 'none';
+        chevron.className = 'fa-solid fa-chevron-right';
+      } else {
+        fileTree.style.display = 'flex';
+        chevron.className = 'fa-solid fa-chevron-down';
+      }
+    }
+
+    function openFileInIde(name, dir) {
+      // Check if file is already open in tabs
+      const alreadyOpen = ideOpenTabs.some(t => t.name === name && t.dir === dir);
+      if (!alreadyOpen) {
+        ideOpenTabs.push({ name, dir });
+      }
+      ideActiveFileName = name;
+      ideActiveFileDir = dir;
+      openWindow('win-code');
+      loadIdeActiveFile();
+      populateIdeTabs();
+      populateIdeSidebar();
+      updateGitSidebar();
+    }
+
+    function closeIdeTab(name, dir, event) {
+      if (event) event.stopPropagation();
+      ideOpenTabs = ideOpenTabs.filter(t => !(t.name === name && t.dir === dir));
+      
+      // If closing active file, pick another
+      if (ideActiveFileName === name && ideActiveFileDir === dir) {
+        if (ideOpenTabs.length > 0) {
+          const nextTab = ideOpenTabs[ideOpenTabs.length - 1];
+          ideActiveFileName = nextTab.name;
+          ideActiveFileDir = nextTab.dir;
+          loadIdeActiveFile();
+        } else {
+          ideActiveFileName = '';
+          ideActiveFileDir = '';
+          document.getElementById('ide-code-textarea').value = '';
+          document.getElementById('ide-syntax-overlay').innerHTML = '';
+          document.getElementById('ide-active-file-label').innerText = 'no active file';
+        }
+      }
+      populateIdeTabs();
+      populateIdeSidebar();
+    }
+
+    function populateIdeTabs() {
+      const container = document.getElementById('ide-tabs-container');
+      container.innerHTML = '';
+      ideOpenTabs.forEach(tab => {
+        const tabDiv = document.createElement('div');
+        tabDiv.className = `ide-tab ${tab.name === ideActiveFileName && tab.dir === ideActiveFileDir ? 'active' : ''}`;
+        tabDiv.onclick = () => {
+          ideActiveFileName = tab.name;
+          ideActiveFileDir = tab.dir;
+          loadIdeActiveFile();
+          populateIdeTabs();
+        };
+
+        // File icon based on extension
+        let icon = '<i class="fa-solid fa-file-code" style="color:#00f0ff;"></i>';
+        if (tab.name.endsWith('.html')) icon = '<i class="fa-brands fa-html5" style="color:#e34c26;"></i>';
+        else if (tab.name.endsWith('.css')) icon = '<i class="fa-brands fa-css3-alt" style="color:#264de4;"></i>';
+        else if (tab.name.endsWith('.js')) icon = '<i class="fa-brands fa-js" style="color:#f7df1e;"></i>';
+
+        tabDiv.innerHTML = `
+          ${icon}
+          <span>${tab.name}</span>
+          <i class="fa-solid fa-xmark ide-tab-close" onclick="closeIdeTab('${tab.name}', '${tab.dir}', event)"></i>
+        `;
+        container.appendChild(tabDiv);
+      });
+    }
+
     function populateIdeSidebar() {
       const list = document.getElementById('ide-file-tree');
       list.innerHTML = '';
       const projects = vfs['projects'];
       projects.forEach(file => {
         const item = document.createElement('div');
-        item.style.cssText = `padding:6px; font-size:11px; cursor:pointer; border-radius:4px; ${ideActiveFileName === file.name ? 'background:rgba(255,255,255,0.08);color:var(--accent-color);' : ''}`;
+        item.style.cssText = `padding:6px 8px; font-size:11px; cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:6px; ${ideActiveFileName === file.name ? 'background:rgba(0, 240, 255, 0.1);color:#00f0ff;font-weight:600;' : 'color:#cbd5e1;'}`;
         item.onclick = () => {
-          ideActiveFileDir = 'projects';
-          ideActiveFileName = file.name;
-          loadIdeActiveFile();
-          populateIdeSidebar();
+          openFileInIde(file.name, 'projects');
         };
-        item.innerHTML = `<i class="fa-solid fa-file-code" style="margin-right:6px;"></i> ${file.name}`;
+
+        let fileIcon = '<i class="fa-solid fa-file-code"></i>';
+        if (file.name.endsWith('.html')) fileIcon = '<i class="fa-brands fa-html5" style="color:#e34c26;"></i>';
+        else if (file.name.endsWith('.css')) fileIcon = '<i class="fa-brands fa-css3-alt" style="color:#264de4;"></i>';
+        else if (file.name.endsWith('.js')) fileIcon = '<i class="fa-brands fa-js" style="color:#f7df1e;"></i>';
+
+        item.innerHTML = `${fileIcon} <span>${file.name}</span>`;
         list.appendChild(item);
       });
     }
 
     function loadIdeActiveFile() {
+      if (!ideActiveFileName) return;
       const file = vfs[ideActiveFileDir].find(f => f.name === ideActiveFileName);
       if (file) {
-        document.getElementById('ide-active-file-label').innerText = `editing: ${ideActiveFileName}`;
-        document.getElementById('ide-code-textarea').value = file.content;
-        runIdeCode();
+        document.getElementById('ide-active-file-label').innerHTML = `<i class="fa-solid fa-code"></i> editing: ${ideActiveFileName}`;
+        
+        let lang = 'HTML5';
+        if (ideActiveFileName.endsWith('.css')) lang = 'CSS3';
+        else if (ideActiveFileName.endsWith('.js')) lang = 'Javascript';
+        document.getElementById('ide-lang-info').innerText = lang;
+
+        const textarea = document.getElementById('ide-code-textarea');
+        textarea.value = file.content;
+        
+        // Populate tabs
+        populateIdeTabs();
+        
+        // Trigger code highlighting, gutter sync
+        handleIdeEditorInput();
+        
+        // Debounced preview
+        triggerDebouncedPreview();
       }
     }
 
     function saveIdeCode() {
+      if (!ideActiveFileName) return;
       const file = vfs[ideActiveFileDir].find(f => f.name === ideActiveFileName);
       if (file) {
         file.content = document.getElementById('ide-code-textarea').value;
         saveVfsToStorage();
-        alert("File saved successfully!");
+        updateGitSidebar();
+        // Spawns a floating sleek notification instead of blocking alert!
+        showSystemNotification("UloCode Studio", "File successfully synchronized and committed to local VFS.");
       }
     }
 
+    // Debounce preview builder to keep editor ultra responsive
+    let idePreviewTimeout = null;
+    function triggerDebouncedPreview() {
+      if (idePreviewTimeout) clearTimeout(idePreviewTimeout);
+      idePreviewTimeout = setTimeout(() => {
+        runIdeCode();
+      }, 350);
+    }
+
     function runIdeCode() {
+      if (!ideActiveFileName) return;
       const code = document.getElementById('ide-code-textarea').value;
       const iframe = document.getElementById('ide-sandbox-iframe');
-      iframe.srcdoc = code;
+      
+      // Inject real console log hooks
+      const consoleScript = `
+        <script>
+          (function() {
+            function sendLog(type, args) {
+              window.parent.postMessage({
+                type: 'ide-console-log',
+                logType: type,
+                message: Array.from(args).map(val => {
+                  if (typeof val === 'object') {
+                    try { return JSON.stringify(val); } catch(e) { return '[Object]'; }
+                  }
+                  return String(val);
+                }).join(' ')
+              }, '*');
+            }
+            console.log = function() { sendLog('log', arguments); };
+            console.warn = function() { sendLog('warn', arguments); };
+            console.error = function() { sendLog('error', arguments); };
+            window.addEventListener('error', function(e) {
+              sendLog('error', [e.message + ' (Line ' + e.lineno + ')']);
+            });
+          })();
+        <\/script>
+      `;
+
+      // Prepend console script to capture logs
+      let finalCode = code;
+      if (code.includes('<head>')) {
+        finalCode = code.replace('<head>', '<head>' + consoleScript);
+      } else {
+        finalCode = consoleScript + code;
+      }
+      
+      iframe.srcdoc = finalCode;
+    }
+
+    // Handle postMessage console logs from sandbox iframe!
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'ide-console-log') {
+        const output = document.getElementById('ide-console-output');
+        const timestamp = new Date().toLocaleTimeString();
+        let color = '#34d399'; // default green
+        let icon = 'ℹ️';
+
+        if (event.data.logType === 'warn') {
+          color = '#fbbf24'; // yellow
+          icon = '⚠️';
+        } else if (event.data.logType === 'error') {
+          color = '#f87171'; // red
+          icon = '❌';
+        }
+
+        output.innerHTML += `\n<span style="color:${color}">${icon} [${timestamp}] ${event.data.message}</span>`;
+        output.scrollTop = output.scrollHeight;
+      }
+    });
+
+    function clearIdeConsole() {
+      document.getElementById('ide-console-output').innerHTML = 'Console cleared. Listening for logs...';
+    }
+
+    // Scroll sync
+    function syncEditorScroll() {
+      const textarea = document.getElementById('ide-code-textarea');
+      const gutter = document.getElementById('ide-line-gutter');
+      const overlay = document.getElementById('ide-syntax-overlay');
+      if (textarea && gutter && overlay) {
+        gutter.scrollTop = textarea.scrollTop;
+        overlay.scrollTop = textarea.scrollTop;
+        overlay.scrollLeft = textarea.scrollLeft;
+      }
+    }
+
+    // Live update parser
+    function handleIdeEditorInput() {
+      const textarea = document.getElementById('ide-code-textarea');
+      if (!textarea) return;
+      
+      // Update in-memory VFS copy instantly
+      const file = vfs[ideActiveFileDir].find(f => f.name === ideActiveFileName);
+      if (file) {
+        file.content = textarea.value;
+      }
+      
+      updateLineNumbers();
+      updateSyntaxHighlighting();
+      updateCursorInfo();
+      triggerDebouncedPreview();
+      updateGitSidebar();
+    }
+
+    function updateLineNumbers() {
+      const textarea = document.getElementById('ide-code-textarea');
+      const gutter = document.getElementById('ide-line-gutter');
+      if (!textarea || !gutter) return;
+
+      const lineCount = textarea.value.split('\n').length;
+      let numbersHtml = '';
+      for (let i = 1; i <= lineCount; i++) {
+        numbersHtml += `<div>${i}</div>`;
+      }
+      gutter.innerHTML = numbersHtml;
+      syncEditorScroll();
+    }
+
+    function updateSyntaxHighlighting() {
+      const textarea = document.getElementById('ide-code-textarea');
+      const overlay = document.getElementById('ide-syntax-overlay');
+      if (!textarea || !overlay) return;
+
+      let text = textarea.value;
+      // HTML Escape
+      text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      // Comments: // ...
+      text = text.replace(/(\/\/.*)/g, '<span class="token-comment">$1</span>');
+
+      // Double Quoted Strings
+      text = text.replace(/(&quot;.*?[^\\]&quot;)/g, '<span class="token-string">$1</span>');
+
+      // Single Quoted Strings
+      text = text.replace(/(&apos;.*?[^\\]&apos;)/g, '<span class="token-string">$1</span>');
+
+      // Backticks
+      text = text.replace(/(`.*?[^\\]`)/g, '<span class="token-string">$1</span>');
+
+      // Keywords
+      const keywords = /\b(let|const|function|return|var|if|else|for|while|new|class|import|export|default|fn)\b/g;
+      text = text.replace(keywords, '<span class="token-keyword">$1</span>');
+
+      // Numbers
+      text = text.replace(/\b(\d+)\b/g, '<span class="token-number">$1</span>');
+
+      // HTML Tags
+      text = text.replace(/(&lt;\/?[a-zA-Z0-9\-]+.*?&gt;)/g, '<span class="token-tag">$1</span>');
+
+      overlay.innerHTML = text + '\n\n';
+    }
+
+    function updateCursorInfo() {
+      const textarea = document.getElementById('ide-code-textarea');
+      const info = document.getElementById('ide-cursor-info');
+      if (!textarea || !info) return;
+
+      const selStart = textarea.selectionStart;
+      const lines = textarea.value.substring(0, selStart).split('\n');
+      const row = lines.length;
+      const col = lines[lines.length - 1].length + 1;
+      info.innerText = `Ln ${row}, Col ${col}`;
+    }
+
+    // Capture tab character insert inside editor textarea
+    setTimeout(() => {
+      const textarea = document.getElementById('ide-code-textarea');
+      if (textarea) {
+        textarea.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 2;
+            handleIdeEditorInput();
+          }
+        });
+        
+        textarea.addEventListener('keyup', updateCursorInfo);
+        textarea.addEventListener('click', updateCursorInfo);
+      }
+    }, 1200);
+
+    // Code Prettifier / Formatter
+    function triggerCodeFormatting() {
+      const textarea = document.getElementById('ide-code-textarea');
+      if (!textarea) return;
+      
+      const raw = textarea.value;
+      const lines = raw.split('\n');
+      let depth = 0;
+      let formatted = '';
+
+      lines.forEach(line => {
+        let trimmed = line.trim();
+        if (trimmed.startsWith('}') || trimmed.startsWith('</')) {
+          depth = Math.max(0, depth - 1);
+        }
+        
+        const indent = '  '.repeat(depth);
+        formatted += indent + trimmed + '\n';
+        
+        if (trimmed.endsWith('{') || (trimmed.startsWith('<') && !trimmed.startsWith('</') && !trimmed.endsWith('/>') && !trimmed.includes('</') && (trimmed.includes('div') || trimmed.includes('body') || trimmed.includes('head') || trimmed.includes('html')))) {
+          depth++;
+        }
+      });
+
+      textarea.value = formatted.trim();
+      handleIdeEditorInput();
+      showSystemNotification("UloCode Studio", "Document successfully formatted using Prettier Formatter.");
+    }
+
+    // Toggle Themes dynamically
+    function changeIdeTheme() {
+      const select = document.getElementById('ide-theme-select');
+      const overlay = document.getElementById('ide-syntax-overlay');
+      const textarea = document.getElementById('ide-code-textarea');
+      const gutter = document.getElementById('ide-line-gutter');
+      
+      const theme = select.value;
+      
+      let bg = '#151722', text = '#f1f5f9', comment = '#6272a4', keyword = '#ff79c6', string = '#f1fa8c', gutterBg = '#0f1017';
+      
+      if (theme === 'monokai') {
+        bg = '#272822'; text = '#f8f8f2'; comment = '#75715e'; keyword = '#f92672'; string = '#e6db74'; gutterBg = '#1e1f1c';
+      } else if (theme === 'onedark') {
+        bg = '#282c34'; text = '#abb2bf'; comment = '#5c6370'; keyword = '#c678dd'; string = '#98c379'; gutterBg = '#21252b';
+      } else if (theme === 'synthwave') {
+        bg = '#2b213a'; text = '#f0efe1'; comment = '#848bb3'; keyword = '#fede5d'; string = '#ff7edb'; gutterBg = '#241b30';
+      } else if (theme === 'github-light') {
+        bg = '#ffffff'; text = '#24292e'; comment = '#6a737d'; keyword = '#d73a49'; string = '#032f62'; gutterBg = '#f6f8fa';
+      }
+
+      overlay.style.background = bg;
+      textarea.style.color = 'transparent';
+      textarea.style.background = 'transparent';
+      gutter.style.background = gutterBg;
+
+      // Swap stylesheet overrides
+      const tokens = document.styleSheets[0];
+      // Dracula overrides
+      updateSyntaxHighlighting();
+      showSystemNotification("Theme Swapped", `Editor color theme changed to ${theme.toUpperCase()}`);
+    }
+
+    // Search and Replace
+    function triggerIdeSearch() {
+      const query = document.getElementById('ide-search-input').value.toLowerCase();
+      const resultsDiv = document.getElementById('ide-search-results');
+      if (!query) {
+        resultsDiv.innerText = 'Type to search workspace...';
+        return;
+      }
+
+      let matches = [];
+      const projects = vfs['projects'];
+      projects.forEach(file => {
+        const lines = file.content.split('\n');
+        lines.forEach((line, idx) => {
+          if (line.toLowerCase().includes(query)) {
+            matches.push({ file: file.name, line: idx + 1, content: line.trim() });
+          }
+        });
+      });
+
+      if (matches.length === 0) {
+        resultsDiv.innerHTML = '<span style="color:#ef4444;">No matches found</span>';
+      } else {
+        let html = `<div style="font-weight:bold;margin-bottom:4px;color:#a7f3d0;">Found ${matches.length} matches:</div>`;
+        matches.forEach(m => {
+          html += `<div style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;" onclick="openFileInIde('${m.file}', 'projects')">
+            <strong style="color:var(--accent-color);">${m.file}:${m.line}</strong> ${m.content}
+          </div>`;
+        });
+        resultsDiv.innerHTML = html;
+      }
+    }
+
+    function triggerIdeReplaceAll() {
+      const query = document.getElementById('ide-search-input').value;
+      const replace = document.getElementById('ide-replace-input').value;
+      if (!query) return;
+
+      const projects = vfs['projects'];
+      let count = 0;
+      projects.forEach(file => {
+        if (file.content.includes(query)) {
+          const parts = file.content.split(query);
+          count += parts.length - 1;
+          file.content = parts.join(replace);
+        }
+      });
+
+      saveVfsToStorage();
+      loadIdeActiveFile();
+      triggerIdeSearch();
+      showSystemNotification("Search & Replace", `Replaced ${count} occurrences of "${query}" across workspace.`);
+    }
+
+    // Source Control Diff tracking
+    function updateGitSidebar() {
+      const list = document.getElementById('ide-git-changes-list');
+      if (!list) return;
+
+      let modifications = [];
+      const projects = vfs['projects'];
+      projects.forEach(file => {
+        const original = ideOriginalCodes[file.name] || '';
+        if (file.content !== original) {
+          modifications.push(file.name);
+        }
+      });
+
+      if (modifications.length === 0) {
+        list.innerHTML = '<div style="padding:6px 0;font-style:italic;">No unstaged modifications</div>';
+      } else {
+        let html = '';
+        modifications.forEach(m => {
+          html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
+            <span style="color:#fbbf24;"><i class="fa-solid fa-file-pen"></i> ${m}</span>
+            <span style="font-size:9px; background:#fbbf24; color:#000; padding:1px 4px; border-radius:4px;">MODIFIED</span>
+          </div>`;
+        });
+        list.innerHTML = html;
+      }
+    }
+
+    function commitIdeChanges() {
+      const projects = vfs['projects'];
+      projects.forEach(file => {
+        ideOriginalCodes[file.name] = file.content;
+      });
+      saveVfsToStorage();
+      updateGitSidebar();
+      showSystemNotification("Source Control", "Workspace changes staged and committed successfully.");
     }
 
     // Dynamic Publishing App Store Engine
@@ -2058,7 +3171,7 @@
       }
     }
 
-    let currentBrowserMode = 'sandbox';
+    let currentBrowserMode = 'chrome';
 
     function changeBrowserMode() {
       const mode = document.getElementById('browser-mode-select').value;
@@ -2187,33 +3300,109 @@
         
         let searchResultsHtml = '';
         if (query) {
+          const cleanQuery = query.toLowerCase().trim();
+          
+          // Rich mock database
+          const searchDb = [
+            {
+              title: "DOOM Classic WebAssembly Player",
+              url: "https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos",
+              desc: "Play the original FULL classic DOOM and DOOM II directly in your web browser. Experience high-framerate VGA retro gaming with full music and sound support.",
+              tags: ["doom", "game", "retro", "wasm", "jsdos", "play", "skull", "e", "h"]
+            },
+            {
+              title: "UloPaint Online Art Studio",
+              url: "https://uloos.desktop/paint",
+              desc: "A sleek HTML5 drawing canvas application. Paint with custom brush sizes, harmonic color presets, and save your premium vectors directly to your PC.",
+              tags: ["paint", "canvas", "draw", "art", "creative", "vector", "palette", "e"]
+            },
+            {
+              title: "GitHub - Aqua-code750/uloos-1.2: Bare-metal x86_64 OS Kernel",
+              url: "https://github.com/Aqua-code750/uloos-1.2",
+              desc: "Official UloOS 1.2 kernel repository. Written in pure Rust and Assembly. Features PS/2 keyboard/mouse controllers, CMOS clock synchronized default, and flat charcoal grid VGA UI.",
+              tags: ["github", "rust", "kernel", "os", "bare-metal", "aqua", "uloos", "code", "h", "e"]
+            },
+            {
+              title: "Aqua-code750 (GitHub Profile) - Holograph Studios",
+              url: "https://github.com/Aqua-code750",
+              desc: "Explore project repositories by Aqua-code750 including UloOS Minimal, system simulators, and bare metal utilities. Contact: kavsmanutv@gmail.com.",
+              tags: ["github", "profile", "aqua", "developer", "holograph", "h", "e"]
+            },
+            {
+              title: "Hobby operating system - Wikipedia",
+              url: "https://wikipedia.org/wiki/Hobby_operating_system",
+              desc: "A hobby operating system is an OS created from scratch, designed to study kernel architecture, long mode, bios interrupts, and driver interfaces.",
+              tags: ["wikipedia", "hobby", "operating", "system", "kernel", "os", "h", "e"]
+            },
+            {
+              title: "Let's build a x86_64 Operating System in Rust! - YouTube",
+              url: "https://youtube.com/watch?v=rust-os",
+              desc: "A detailed guide on setting up long mode, handling interrupts, writing VGA drivers, and resolving PS/2 mouse conflicts in bare metal Rust.",
+              tags: ["youtube", "video", "rust", "os", "tutorial", "build", "h", "e"]
+            },
+            {
+              title: "UloWeather Live Forecast Dashboard",
+              url: "https://uloos.desktop/weather",
+              desc: "Get real-time weather alerts, temperature checks, humidity analysis, and hourly forecasts for global metro cities. Auto-synchronized and beautifully animated.",
+              tags: ["weather", "forecast", "temp", "mumbai", "london", "tokyo", "h", "e"]
+            },
+            {
+              title: "UloMusic Synthesizer & Visualizer",
+              url: "https://uloos.desktop/music",
+              desc: "Play notes, synthesize custom waveforms (sine, square, triangle), and view gorgeous live frequency visualizer bars in dark mode.",
+              tags: ["music", "synth", "audio", "keyboard", "piano", "visualizer", "e"]
+            },
+            {
+              title: "UloTerminal System Console Prompt",
+              url: "https://uloos.desktop/terminal",
+              desc: "Unrestricted root system console. Run core commands like help, whoami, clear, and inspect active files inside the virtual file system database.",
+              tags: ["terminal", "console", "cmd", "shell", "bash", "help", "e"]
+            },
+            {
+              title: "UloKeep Sticky Notes & Auto-Persistence",
+              url: "https://uloos.desktop/notes",
+              desc: "Quick notes widget for core developers. Write draft thoughts and allow local storage database to seamlessly persist your items.",
+              tags: ["notes", "keep", "sticky", "todo", "draft", "e"]
+            }
+          ];
+
+          // Filter matching pages
+          let matches = searchDb.filter(item => {
+            return item.tags.includes(cleanQuery) || 
+                   item.title.toLowerCase().includes(cleanQuery) || 
+                   item.desc.toLowerCase().includes(cleanQuery);
+          });
+
+          // Fallback: If no matches, generate dynamic matches based on query keywords
+          if (matches.length === 0) {
+            matches = [
+              {
+                title: `Special search results for "${query}"`,
+                url: `https://google.com/search?q=${encodeURIComponent(cleanQuery)}`,
+                desc: `Your keyword "${query}" resolved successfully. The UloOS custom indexer located relevant records inside the simulated kernel registry database files.`,
+                tags: []
+              },
+              {
+                title: `Hobby Operating System Architecture - Wikipedia`,
+                url: `https://wikipedia.org/wiki/Hobby_operating_system`,
+                desc: `A generic encyclopedic outline of system loaders, long mode kernel registers, and interrupt vectors matching keyword query: "${query}".`,
+                tags: []
+              }
+            ];
+          }
+
+          let resultsList = matches.map(item => `
+            <div style="margin-bottom: 22px;">
+              <span style="color: #94a3b8; font-size: 11px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.url}</span>
+              <a href="#" onclick="window.parent.navigateBrowser('${item.url}'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500; hover: underline;">${item.title}</a>
+              <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">${item.desc}</p>
+            </div>
+          `).join('');
+
           searchResultsHtml = `
-            <div style="max-width: 650px; text-align: left; margin-top: 20px;">
-              <p style="color: #94a3b8; font-size: 12px; margin-bottom: 15px;">About 1,240 results (0.18 seconds)</p>
-              
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">github.com &gt; Aqua-code750 &gt; uloos-1.2</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750/uloos-1.2'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500; hover: underline;">GitHub - Aqua-code750/uloos-1.2: Bare-metal x86_64 OS Kernel</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">Official UloOS 1.2 kernel repository. Written in pure Rust and Assembly. Features PS/2 keyboard/mouse controllers, CMOS clock synchronized to IST timezone, and flat charcoal grid VGA UI.</p>
-              </div>
-
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">github.com &gt; Aqua-code750</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Aqua-code750 (GitHub Profile) - Holograph Studios</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">Explore project repositories by Aqua-code750 including UloOS Minimal, system simulators, and bare metal utilities. Contact: kavsmanutv@gmail.com.</p>
-              </div>
-
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">wikipedia.org &gt; wiki &gt; Hobby_operating_system</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/Hobby_operating_system'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Hobby operating system - Wikipedia</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">A hobby operating system is an OS created from scratch, designed to study kernel architecture, long mode, bios interrupts, and driver interfaces.</p>
-              </div>
-
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">youtube.com &gt; watch?v=rust-os</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://youtube.com/watch?v=rust-os'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Let's build a x86_64 Operating System in Rust! - YouTube</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">A detailed guide on setting up long mode, handling interrupts, writing VGA drivers, and resolving PS/2 mouse conflicts in bare metal Rust.</p>
-              </div>
+            <div style="max-width: 650px; text-align: left; margin-top: 20px; width: 100%;">
+              <p style="color: #94a3b8; font-size: 12px; margin-bottom: 15px;">About ${matches.length * 12 + 3} results (0.12 seconds)</p>
+              ${resultsList}
             </div>
           `;
         }
@@ -2663,14 +3852,49 @@
       if (id === 'win-notes') {
         setTimeout(initUloKeepNotes, 100);
       }
+      if (id === 'win-doom') {
+        setTimeout(initRealDoom, 100);
+      }
       
+      if (!win.dataset.origWidth) {
+        const inlineW = win.style.width;
+        const inlineH = win.style.height;
+        win.dataset.origWidth = inlineW ? parseInt(inlineW) : 820;
+        win.dataset.origHeight = inlineH ? parseInt(inlineH) : 540;
+      }
+
       win.classList.add('active');
       
       const desktop = document.getElementById('desktop');
       const dRect = desktop.getBoundingClientRect();
-      const offset = Math.random() * 30;
-      win.style.left = `${(dRect.width - 820) / 2 + offset}px`;
-      win.style.top = `${(dRect.height - 540) / 2 + offset}px`;
+      const origW = parseInt(win.dataset.origWidth);
+      const origH = parseInt(win.dataset.origHeight);
+      
+      // Auto-scale window if it exceeds desktop viewport bounds
+      const padX = 24;
+      const padY = 80;
+      const maxW = dRect.width - padX;
+      const maxH = dRect.height - padY;
+      
+      let targetW = origW;
+      let targetH = origH;
+      
+      if (targetW > maxW && maxW > 200) {
+        targetW = maxW;
+      }
+      if (targetH > maxH && maxH > 200) {
+        targetH = maxH;
+      }
+      
+      win.style.width = `${targetW}px`;
+      win.style.height = `${targetH}px`;
+      
+      // Perfect centering with a subtle randomized offset
+      const leftPos = Math.max(10, (dRect.width - targetW) / 2) + (Math.random() * 16 - 8);
+      const topPos = Math.max(10, (dRect.height - targetH) / 2) + (Math.random() * 16 - 8);
+      
+      win.style.left = `${leftPos}px`;
+      win.style.top = `${topPos}px`;
       
       const icon = document.getElementById(`task-${id}`);
       if (icon) icon.classList.add('active');
@@ -2684,11 +3908,19 @@
       win.classList.remove('active');
       const icon = document.getElementById(`task-${id}`);
       if (icon) icon.classList.remove('active');
+      
+      if (id === 'win-doom') {
+        pauseDoomEmulator();
+      }
     }
 
     function minimizeWindow(id) {
       const win = document.getElementById(id);
       win.classList.remove('active');
+      
+      if (id === 'win-doom') {
+        pauseDoomEmulator();
+      }
     }
 
     function toggleWindowMinimization(id) {
@@ -2702,11 +3934,36 @@
 
     function maximizeWindow(id) {
       const win = document.getElementById(id);
+      if (!win.dataset.origWidth) {
+        const inlineW = win.style.width;
+        const inlineH = win.style.height;
+        win.dataset.origWidth = inlineW ? parseInt(inlineW) : 820;
+        win.dataset.origHeight = inlineH ? parseInt(inlineH) : 540;
+      }
+      
       if (isMaximized[id]) {
-        win.style.width = '820px';
-        win.style.height = '540px';
-        win.style.left = '10%';
-        win.style.top = '10%';
+        const origW = parseInt(win.dataset.origWidth);
+        const origH = parseInt(win.dataset.origHeight);
+        
+        const desktop = document.getElementById('desktop');
+        const dRect = desktop.getBoundingClientRect();
+        
+        // Auto-scale target restoring layout if it exceeds screen dimensions
+        const padX = 24;
+        const padY = 80;
+        const maxW = dRect.width - padX;
+        const maxH = dRect.height - padY;
+        
+        const targetW = origW > maxW && maxW > 200 ? maxW : origW;
+        const targetH = origH > maxH && maxH > 200 ? maxH : origH;
+        
+        win.style.width = `${targetW}px`;
+        win.style.height = `${targetH}px`;
+        
+        // Perfect center-position restore
+        win.style.left = `${Math.max(10, (dRect.width - targetW) / 2)}px`;
+        win.style.top = `${Math.max(10, (dRect.height - targetH) / 2)}px`;
+        
         isMaximized[id] = false;
       } else {
         win.style.width = '100vw';
@@ -2715,6 +3972,182 @@
         win.style.top = '36px';
         isMaximized[id] = true;
       }
+    }
+
+    // UloOS Copilot AI Assistant companion engine
+    let copilotChatHistory = [];
+    
+    function toggleAiCompanion() {
+      const drawer = document.getElementById('ai-companion-drawer');
+      drawer.classList.toggle('open');
+      if (drawer.classList.contains('open')) {
+        updateAiSuggestions();
+        document.getElementById('ai-chat-input').focus();
+      }
+    }
+
+    // Toggle via Alt+C shortcut
+    window.addEventListener('keydown', (e) => {
+      if (e.altKey && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        toggleAiCompanion();
+      }
+    });
+
+    function updateAiSuggestions() {
+      const panel = document.getElementById('ai-suggestions-panel');
+      if (!panel) return;
+      panel.innerHTML = '';
+      
+      let suggestions = [];
+      const activeWin = activeWindow; // global tracking active window
+      
+      if (activeWin === 'win-code') {
+        suggestions = [
+          "Generate HTML Template",
+          "Explain UloCode VFS",
+          "Autocomplete Button click"
+        ];
+      } else if (activeWin === 'win-explorer') {
+        suggestions = [
+          "What is VFS?",
+          "How to create folders?",
+          "Import text files"
+        ];
+      } else if (activeWin === 'win-browser') {
+        suggestions = [
+          "Mock Chrome landing page",
+          "Search databases",
+          "Chrome CORS limits"
+        ];
+      } else if (activeWin === 'win-store') {
+        suggestions = [
+          "Publishing script guide",
+          "Dev account profile",
+          "Download catalogs"
+        ];
+      } else {
+        suggestions = [
+          "UloOS features list",
+          "Change dynamic themes",
+          "MS-DOS prompt guide"
+        ];
+      }
+      
+      suggestions.forEach(s => {
+        const chip = document.createElement('div');
+        chip.className = 'ai-suggestion-chip';
+        chip.innerText = s;
+        chip.onclick = () => {
+          document.getElementById('ai-chat-input').value = s;
+          sendAiMessage();
+        };
+        panel.appendChild(chip);
+      });
+    }
+
+    function handleAiInputKey(e) {
+      if (e.key === 'Enter') {
+        sendAiMessage();
+      }
+    }
+
+    function sendAiMessage() {
+      const input = document.getElementById('ai-chat-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const chatArea = document.getElementById('ai-chat-area');
+      
+      // User bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'chat-bubble user';
+      userBubble.innerText = query;
+      chatArea.appendChild(userBubble);
+      
+      input.value = '';
+      chatArea.scrollTop = chatArea.scrollHeight;
+
+      // Display typing loader
+      const loaderBubble = document.createElement('div');
+      loaderBubble.className = 'chat-bubble ai';
+      loaderBubble.id = 'copilot-typing-loader';
+      loaderBubble.innerText = '🤖 Copilot is thinking...';
+      chatArea.appendChild(loaderBubble);
+      chatArea.scrollTop = chatArea.scrollHeight;
+
+      setTimeout(() => {
+        // Remove loader
+        const loader = document.getElementById('copilot-typing-loader');
+        if (loader) loader.remove();
+
+        const replyBubble = document.createElement('div');
+        replyBubble.className = 'chat-bubble ai';
+        
+        // Context-aware dynamic responses
+        let reply = "I am the UloOS Core Assistant. Ask me about files, code editing, command shell syntax, settings, themes, or App Store publishing presets!";
+        const normQuery = query.toLowerCase();
+
+        if (normQuery.includes('html') || normQuery.includes('template') || normQuery.includes('generate')) {
+          reply = `🤖 Here is a live **HTML5 Template** you can copy into UloCode Studio:
+\`\`\`html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { background: #070913; color: #00f0ff; text-align: center; padding: 20px; font-family: sans-serif; }
+    button { background: #ff79c6; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h3>Holograph Live Sandbox App</h3>
+  <button onclick="console.log('AI template clicked!')">Click me!</button>
+</body>
+</html>
+\`\`\`
+Type this inside UloCode Studio and press **Run Preview**!`;
+        } else if (normQuery.includes('vfs') || normQuery.includes('virtual file') || normQuery.includes('explorer')) {
+          reply = `🤖 **UloOS Virtual File System (VFS)**:
+All your files and projects are loaded into memory and persisted automatically to your browser's \`localStorage\`.
+* Folders structure: \`/root\`, \`/documents\`, and \`/projects\` (where UloCode loads apps).
+* Files created or edited in Explorer are fully synced with UloCode tabs!`;
+        } else if (normQuery.includes('publish') || normQuery.includes('store') || normQuery.includes('app')) {
+          reply = `🤖 **App Store Catalog Publishing**:
+1. Write a cool application inside **UloCode Studio** editor.
+2. Click the **Publish App** button inside UloCode.
+3. Choose a custom name and description.
+4. Your application will instantly populate the public **UloOS App Store** index! Anyone can download and run it!`;
+        } else if (normQuery.includes('theme') || normQuery.includes('settings') || normQuery.includes('personal')) {
+          reply = `🤖 **UloOS Customization**:
+You can personalize the visual style easily!
+1. Open the Start Menu, click **Settings**.
+2. Press **[T]** on your keyboard inside the QEMU kernel to cycle 5 hardware palettes (Sky Blue Fluent, Cyber Purple, Emerald Mint, Coral Sunset, Classic Light Mode).
+3. In the web simulator, use the sidebar settings panel to swap IDE schemes instantly!`;
+        } else if (normQuery.includes('chrome') || normQuery.includes('browser') || normQuery.includes('search')) {
+          reply = `🤖 **Google Chrome Sandbox**:
+* We upgraded UloBrowser to Chrome aesthetics including high-res multi-tabs, address bars, search triggers.
+* The search database is fully dynamic: typing custom keywords will load custom result lists matching your query context!`;
+        } else if (normQuery.includes('features') || normQuery.includes('help') || normQuery.includes('os')) {
+          reply = `🤖 **UloOS 1.2 Interactive Guides**:
+Welcome! Here is how to navigate:
+* **UloCode**: Full VS Code replica with custom tabs, scroll sync, and output debugger console logs terminal.
+* **Explorer**: Windows-style folding nodes and folder creation/import hooks.
+* **Music Synth**: HTML5 harmonic sound visualizer visualizer.
+* **TUI DOOM**: Fully keyboard-interactive retro shooter.`;
+        } else if (normQuery.includes('autocomplete') || normQuery.includes('click')) {
+          reply = `🤖 **UloCode Click Autocomplete**:
+Insert this event listener into your button elements inside the editor to track logs:
+\`\`\`javascript
+<button onclick="console.log('Button clicked by developer!')">Test</button>
+\`\`\`
+Any console logs print directly in the scrolling Console logs debugger terminal on the right panel!`;
+        }
+
+        replyBubble.innerHTML = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        chatArea.appendChild(replyBubble);
+        chatArea.scrollTop = chatArea.scrollHeight;
+        updateAiSuggestions(); // refresh suggestions
+      }, 500);
     }
 
     // Windows 11 Centered Start Menu actions
@@ -3504,6 +4937,117 @@
         `;
         container.appendChild(div);
       });
+    }
+
+    // JS-DOS v7 Classic DOOM Engine Controllers
+    let doomDosInstance = null;
+    let doomInitialized = false;
+    let currentDoomVersion = "doom1";
+
+    const doomBundles = {
+      doom1: "./doom.jsdos", // Local High-Speed Free Playable Shareware DOOM Media!
+      doom2: "https://cdn.dos.zone/custom/dos/doom2.jsdos"                                           // DOOM II
+    };
+
+    function initRealDoom() {
+      const container = document.getElementById("jsdos-doom");
+      if (!container) return;
+
+      if (doomInitialized) {
+        if (doomDosInstance && doomDosInstance.unpause) {
+          doomDosInstance.unpause();
+          document.getElementById("doom-status-label").innerText = "RUNNING";
+          document.getElementById("doom-status-label").style.color = "#22c55e";
+          focusDoomEmulator();
+        }
+        return;
+      }
+
+      doomInitialized = true;
+      document.getElementById("doom-status-label").innerText = "LOADING CORE";
+      document.getElementById("doom-status-label").style.color = "#eab308";
+
+      const versionTitle = currentDoomVersion === "doom2" ? "DOOM II: Hell on Earth" : "Ultimate DOOM";
+
+      container.innerHTML = `
+        <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; color:#fff; font-family:'Courier New', monospace; background:#050505; text-align:center; box-sizing:border-box; padding:20px;">
+          <i class="fa-solid fa-skull" style="font-size:42px; color:#f43f5e; margin-bottom:12px; animation: pulse 1.5s infinite;"></i>
+          <div style="font-size:13px; font-weight:bold; margin-bottom:6px; color:#22c55e;">BOOTING MS-DOS DOOM...</div>
+          <div style="font-size:11px; color:#fff; margin-bottom:10px; font-weight:bold;">${versionTitle}</div>
+          <div style="font-size:9px; color:#a1a1aa; max-width: 280px;" id="doom-init-detail">Downloading WebAssembly compiler...</div>
+          <div style="width:160px; height:5px; background:#222; border-radius:3px; margin-top:10px; overflow:hidden; position:relative;">
+            <div style="position:absolute; top:0; left:0; width:60px; height:100%; background:#22c55e; border-radius:3px; animation: loading-progress 1.5s infinite ease-in-out;"></div>
+          </div>
+          <div style="font-size:8px; color:#555; margin-top:15px; max-width:320px; line-height:1.3;">ARROW KEYS to move | CTRL to Shoot | SPACE to use door/switch | ENTER to select options</div>
+        </div>
+      `;
+
+      emulators.pathPrefix = "https://js-dos.com/v7/build/releases/latest/js-dos/";
+
+      Dos(container)
+        .run(doomBundles[currentDoomVersion])
+        .then((ci) => {
+          doomDosInstance = ci;
+          document.getElementById("doom-status-label").innerText = "RUNNING";
+          document.getElementById("doom-status-label").style.color = "#22c55e";
+          
+          container.addEventListener("click", () => {
+            focusDoomEmulator();
+          });
+          
+          setTimeout(focusDoomEmulator, 500);
+        })
+        .catch((err) => {
+          console.error(err);
+          container.innerHTML = `
+            <div style="color:#ef4444; font-family:'Courier New', monospace; padding:20px; text-align:center; background:#0a0000; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+              <h4><i class="fa-solid fa-triangle-exclamation"></i> ENGINE CRASH</h4>
+              <p style="font-size:10px; margin-top:8px;">${err.message || err}</p>
+              <button onclick="doomInitialized=false; initRealDoom();" class="ide-btn" style="margin-top:12px; background:#ef4444; color:#fff; border-color:#ef4444;">Retry Load</button>
+            </div>
+          `;
+        });
+    }
+
+    function focusDoomEmulator() {
+      if (doomDosInstance) {
+        doomDosInstance.focus();
+      }
+    }
+
+    function pauseDoomEmulator() {
+      if (doomDosInstance && doomDosInstance.pause) {
+        doomDosInstance.pause();
+        document.getElementById("doom-status-label").innerText = "PAUSED";
+        document.getElementById("doom-status-label").style.color = "#ef4444";
+      }
+    }
+
+    function changeDoomVersion(version) {
+      if (version !== currentDoomVersion) {
+        currentDoomVersion = version;
+        if (doomDosInstance) {
+          try {
+            doomDosInstance.exit();
+          } catch(e) {}
+          doomDosInstance = null;
+        }
+        doomInitialized = false;
+        initRealDoom();
+      }
+    }
+
+    function restartDoom() {
+      if (confirm("Are you sure you want to restart DOOM Classic?")) {
+        if (doomDosInstance) {
+          try {
+            doomDosInstance.exit();
+          } catch(e) {}
+          doomDosInstance = null;
+        }
+        doomInitialized = false;
+        initRealDoom();
+      }
     }
   </script>
 </body>

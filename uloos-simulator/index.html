@@ -240,7 +240,7 @@
     .shortcut.doom i { color: #f43f5e; }
     .shortcut.bash i { color: #eab308; }
     .shortcut.explorer i { color: #3b82f6; }
-    .shortcut.browser i { color: #06b6d4; }
+    .shortcut.browser i { color: #22c55e; }
     .shortcut.code i { color: #8b5cf6; }
     .shortcut.text i { color: #3b82f6; }
     .shortcut.slides i { color: #f97316; }
@@ -940,7 +940,19 @@
       50% { transform: translateY(-8px) rotate(2deg); }
       100% { transform: translateY(0px) rotate(0deg); }
     }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.97); }
+    }
+    @keyframes loading-progress {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(0%); }
+      100% { transform: translateX(100%); }
+    }
   </style>
+  <!-- Load js-dos v7 from CDN -->
+  <link href="https://js-dos.com/v7/build/releases/latest/js-dos.css" rel="stylesheet">
+  <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
 </head>
 <body>
 
@@ -985,8 +997,8 @@
           <span>UloCode IDE</span>
         </div>
         <div class="shortcut browser" onclick="openWindow('win-browser')">
-          <i class="fa-solid fa-compass"></i>
-          <span>UloBrowser</span>
+          <i class="fa-brands fa-chrome" style="color: #22c55e;"></i>
+          <span>Chrome</span>
         </div>
         <div class="shortcut text" onclick="openWindow('win-text')">
           <i class="fa-solid fa-file-lines"></i>
@@ -1111,7 +1123,7 @@
       <!-- WEB BROWSER WINDOW -->
       <div id="win-browser" class="window">
         <div class="window-header">
-          <div class="window-title"><i class="fa-solid fa-compass" style="color: #06b6d4;"></i> UloBrowser</div>
+          <div class="window-title"><i class="fa-brands fa-chrome" style="color: #22c55e;"></i> Google Chrome Sandbox</div>
           <div class="window-controls">
             <div class="control-dot dot-minimize" onclick="minimizeWindow('win-browser')"></div>
             <div class="control-dot dot-maximize" onclick="maximizeWindow('win-browser')"></div>
@@ -1128,12 +1140,12 @@
             <i class="fa-solid fa-rotate-right" onclick="reloadActiveTab()" style="cursor:pointer; opacity:0.7;"></i>
             
             <select id="browser-mode-select" onchange="changeBrowserMode()" style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 8px; padding: 3px 8px; color: #fff; font-size: 10px; cursor: pointer; outline: none; font-family: inherit;">
+              <option value="chrome" style="background:#1e293b; color:#fff;">🌐 Chrome (Real Google)</option>
               <option value="sandbox" style="background:#1e293b; color:#fff;">🖥️ Sandbox Mode</option>
               <option value="firefox" style="background:#1e293b; color:#fff;">🦊 Firefox Proxy</option>
-              <option value="chrome" style="background:#1e293b; color:#fff;">🌐 Chrome (Real Google)</option>
             </select>
 
-            <input type="text" class="browser-address" id="browser-url-bar" value="https://google.com" onkeydown="handleBrowserUrl(event)" style="flex:1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px 12px; color: #fff; font-size: 11px; outline:none;">
+            <input type="text" class="browser-address" id="browser-url-bar" value="https://www.google.com/search?igu=1" onkeydown="handleBrowserUrl(event)" style="flex:1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px 12px; color: #fff; font-size: 11px; outline:none;">
           </div>
           <div class="window-body" style="background:#fff;" id="browser-iframe-container">
             <!-- Active Tab Sandbox Frame -->
@@ -1191,7 +1203,7 @@
       </div>
 
       <!-- DOOM WINDOW -->
-      <div id="win-doom" class="window">
+      <div id="win-doom" class="window" style="width: 720px; height: 520px;">
         <div class="window-header">
           <div class="window-title"><i class="fa-solid fa-skull" style="color: #f43f5e;"></i> DOOM Classic</div>
           <div class="window-controls">
@@ -1200,8 +1212,24 @@
             <div class="control-dot dot-close" onclick="closeWindow('win-doom')"></div>
           </div>
         </div>
-        <div class="window-body">
-          <iframe src="https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos" style="width: 100%; height: 100%; border: none;"></iframe>
+        <div class="window-body" style="background:#000; overflow:hidden; position:relative; display:flex; flex-direction:column; height:calc(100% - 36px);">
+          <!-- Doom Action Controls -->
+          <div id="doom-controls" style="background:#111; border-bottom:1px solid #22c55e; padding:6px 12px; display:flex; justify-content:space-between; align-items:center; font-family:'Courier New', monospace; font-size:11px; color:#22c55e;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span><i class="fa-solid fa-terminal"></i> STATUS: <strong id="doom-status-label" style="color:#eab308;">STANDBY</strong></span>
+              <span style="opacity:0.5;">|</span>
+              <span>GAME:</span>
+              <select id="doom-version-select" onchange="changeDoomVersion(this.value)" style="background:#222; border:1px solid #22c55e; border-radius:4px; padding:2px 6px; color:#22c55e; font-family:inherit; font-size:10px; outline:none; cursor:pointer;">
+                <option value="doom2">DOOM II: Hell on Earth (Full Game)</option>
+                <option value="doom1">Ultimate DOOM (Classic Episodes)</option>
+              </select>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button onclick="focusDoomEmulator()" style="background:#22c55e; color:#000; font-family:inherit; font-size:9px; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer;"><i class="fa-solid fa-keyboard"></i> Focus Lock</button>
+              <button onclick="restartDoom()" style="background:#ef4444; color:#fff; font-family:inherit; font-size:9px; border:none; padding:2px 8px; border-radius:4px; font-weight:bold; cursor:pointer;"><i class="fa-solid fa-arrows-rotate"></i> Reset Game</button>
+            </div>
+          </div>
+          <div id="jsdos-doom" style="flex:1; width: 100%; height: calc(100% - 27px); outline: none;" tabindex="0"></div>
         </div>
       </div>
 
@@ -1674,7 +1702,7 @@
 
     // Browser Multi-Tabs Engine
     let browserTabs = [
-      { id: 'tab-1', title: 'Google Search', url: 'https://google.com' }
+      { id: 'tab-1', title: 'Chrome Sandbox', url: 'https://www.google.com/search?igu=1' }
     ];
     let activeBrowserTabId = 'tab-1';
 
@@ -1688,7 +1716,7 @@
       loadStoreRegistry();
       document.getElementById('boot-screen').style.display = 'none';
       document.getElementById('desktop').style.display = 'flex';
-      setWallpaper('preset1');
+      setWallpaper('preset2');
       updateClock();
       setInterval(updateClock, 1000);
       
@@ -2058,7 +2086,7 @@
       }
     }
 
-    let currentBrowserMode = 'sandbox';
+    let currentBrowserMode = 'chrome';
 
     function changeBrowserMode() {
       const mode = document.getElementById('browser-mode-select').value;
@@ -2187,33 +2215,109 @@
         
         let searchResultsHtml = '';
         if (query) {
+          const cleanQuery = query.toLowerCase().trim();
+          
+          // Rich mock database
+          const searchDb = [
+            {
+              title: "DOOM Classic WebAssembly Player",
+              url: "https://dos.zone/player/?bundleUrl=https%3A%2F%2Fcdn.dos.zone%2Fcustom%2Fdos%2Fdoom.jsdos",
+              desc: "Play the original FULL classic DOOM and DOOM II directly in your web browser. Experience high-framerate VGA retro gaming with full music and sound support.",
+              tags: ["doom", "game", "retro", "wasm", "jsdos", "play", "skull", "e", "h"]
+            },
+            {
+              title: "UloPaint Online Art Studio",
+              url: "https://uloos.desktop/paint",
+              desc: "A sleek HTML5 drawing canvas application. Paint with custom brush sizes, harmonic color presets, and save your premium vectors directly to your PC.",
+              tags: ["paint", "canvas", "draw", "art", "creative", "vector", "palette", "e"]
+            },
+            {
+              title: "GitHub - Aqua-code750/uloos-1.2: Bare-metal x86_64 OS Kernel",
+              url: "https://github.com/Aqua-code750/uloos-1.2",
+              desc: "Official UloOS 1.2 kernel repository. Written in pure Rust and Assembly. Features PS/2 keyboard/mouse controllers, CMOS clock synchronized default, and flat charcoal grid VGA UI.",
+              tags: ["github", "rust", "kernel", "os", "bare-metal", "aqua", "uloos", "code", "h", "e"]
+            },
+            {
+              title: "Aqua-code750 (GitHub Profile) - Holograph Studios",
+              url: "https://github.com/Aqua-code750",
+              desc: "Explore project repositories by Aqua-code750 including UloOS Minimal, system simulators, and bare metal utilities. Contact: kavsmanutv@gmail.com.",
+              tags: ["github", "profile", "aqua", "developer", "holograph", "h", "e"]
+            },
+            {
+              title: "Hobby operating system - Wikipedia",
+              url: "https://wikipedia.org/wiki/Hobby_operating_system",
+              desc: "A hobby operating system is an OS created from scratch, designed to study kernel architecture, long mode, bios interrupts, and driver interfaces.",
+              tags: ["wikipedia", "hobby", "operating", "system", "kernel", "os", "h", "e"]
+            },
+            {
+              title: "Let's build a x86_64 Operating System in Rust! - YouTube",
+              url: "https://youtube.com/watch?v=rust-os",
+              desc: "A detailed guide on setting up long mode, handling interrupts, writing VGA drivers, and resolving PS/2 mouse conflicts in bare metal Rust.",
+              tags: ["youtube", "video", "rust", "os", "tutorial", "build", "h", "e"]
+            },
+            {
+              title: "UloWeather Live Forecast Dashboard",
+              url: "https://uloos.desktop/weather",
+              desc: "Get real-time weather alerts, temperature checks, humidity analysis, and hourly forecasts for global metro cities. Auto-synchronized and beautifully animated.",
+              tags: ["weather", "forecast", "temp", "mumbai", "london", "tokyo", "h", "e"]
+            },
+            {
+              title: "UloMusic Synthesizer & Visualizer",
+              url: "https://uloos.desktop/music",
+              desc: "Play notes, synthesize custom waveforms (sine, square, triangle), and view gorgeous live frequency visualizer bars in dark mode.",
+              tags: ["music", "synth", "audio", "keyboard", "piano", "visualizer", "e"]
+            },
+            {
+              title: "UloTerminal System Console Prompt",
+              url: "https://uloos.desktop/terminal",
+              desc: "Unrestricted root system console. Run core commands like help, whoami, clear, and inspect active files inside the virtual file system database.",
+              tags: ["terminal", "console", "cmd", "shell", "bash", "help", "e"]
+            },
+            {
+              title: "UloKeep Sticky Notes & Auto-Persistence",
+              url: "https://uloos.desktop/notes",
+              desc: "Quick notes widget for core developers. Write draft thoughts and allow local storage database to seamlessly persist your items.",
+              tags: ["notes", "keep", "sticky", "todo", "draft", "e"]
+            }
+          ];
+
+          // Filter matching pages
+          let matches = searchDb.filter(item => {
+            return item.tags.includes(cleanQuery) || 
+                   item.title.toLowerCase().includes(cleanQuery) || 
+                   item.desc.toLowerCase().includes(cleanQuery);
+          });
+
+          // Fallback: If no matches, generate dynamic matches based on query keywords
+          if (matches.length === 0) {
+            matches = [
+              {
+                title: `Special search results for "${query}"`,
+                url: `https://google.com/search?q=${encodeURIComponent(cleanQuery)}`,
+                desc: `Your keyword "${query}" resolved successfully. The UloOS custom indexer located relevant records inside the simulated kernel registry database files.`,
+                tags: []
+              },
+              {
+                title: `Hobby Operating System Architecture - Wikipedia`,
+                url: `https://wikipedia.org/wiki/Hobby_operating_system`,
+                desc: `A generic encyclopedic outline of system loaders, long mode kernel registers, and interrupt vectors matching keyword query: "${query}".`,
+                tags: []
+              }
+            ];
+          }
+
+          let resultsList = matches.map(item => `
+            <div style="margin-bottom: 22px;">
+              <span style="color: #94a3b8; font-size: 11px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.url}</span>
+              <a href="#" onclick="window.parent.navigateBrowser('${item.url}'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500; hover: underline;">${item.title}</a>
+              <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">${item.desc}</p>
+            </div>
+          `).join('');
+
           searchResultsHtml = `
-            <div style="max-width: 650px; text-align: left; margin-top: 20px;">
-              <p style="color: #94a3b8; font-size: 12px; margin-bottom: 15px;">About 1,240 results (0.18 seconds)</p>
-              
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">github.com &gt; Aqua-code750 &gt; uloos-1.2</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750/uloos-1.2'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500; hover: underline;">GitHub - Aqua-code750/uloos-1.2: Bare-metal x86_64 OS Kernel</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">Official UloOS 1.2 kernel repository. Written in pure Rust and Assembly. Features PS/2 keyboard/mouse controllers, CMOS clock synchronized to IST timezone, and flat charcoal grid VGA UI.</p>
-              </div>
-
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">github.com &gt; Aqua-code750</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://github.com/Aqua-code750'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Aqua-code750 (GitHub Profile) - Holograph Studios</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">Explore project repositories by Aqua-code750 including UloOS Minimal, system simulators, and bare metal utilities. Contact: kavsmanutv@gmail.com.</p>
-              </div>
-
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">wikipedia.org &gt; wiki &gt; Hobby_operating_system</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://wikipedia.org/wiki/Hobby_operating_system'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Hobby operating system - Wikipedia</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">A hobby operating system is an OS created from scratch, designed to study kernel architecture, long mode, bios interrupts, and driver interfaces.</p>
-              </div>
-
-              <div style="margin-bottom: 22px;">
-                <span style="color: #94a3b8; font-size: 11px; display: block;">youtube.com &gt; watch?v=rust-os</span>
-                <a href="#" onclick="window.parent.navigateBrowser('https://youtube.com/watch?v=rust-os'); return false;" style="color: #8ab4f8; font-size: 16px; text-decoration: none; font-weight: 500;">Let's build a x86_64 Operating System in Rust! - YouTube</a>
-                <p style="color: #cbd5e1; font-size: 13px; margin-top: 4px; line-height: 1.4;">A detailed guide on setting up long mode, handling interrupts, writing VGA drivers, and resolving PS/2 mouse conflicts in bare metal Rust.</p>
-              </div>
+            <div style="max-width: 650px; text-align: left; margin-top: 20px; width: 100%;">
+              <p style="color: #94a3b8; font-size: 12px; margin-bottom: 15px;">About ${matches.length * 12 + 3} results (0.12 seconds)</p>
+              ${resultsList}
             </div>
           `;
         }
@@ -2663,6 +2767,9 @@
       if (id === 'win-notes') {
         setTimeout(initUloKeepNotes, 100);
       }
+      if (id === 'win-doom') {
+        setTimeout(initRealDoom, 100);
+      }
       
       win.classList.add('active');
       
@@ -2684,11 +2791,19 @@
       win.classList.remove('active');
       const icon = document.getElementById(`task-${id}`);
       if (icon) icon.classList.remove('active');
+      
+      if (id === 'win-doom') {
+        pauseDoomEmulator();
+      }
     }
 
     function minimizeWindow(id) {
       const win = document.getElementById(id);
       win.classList.remove('active');
+      
+      if (id === 'win-doom') {
+        pauseDoomEmulator();
+      }
     }
 
     function toggleWindowMinimization(id) {
@@ -3504,6 +3619,117 @@
         `;
         container.appendChild(div);
       });
+    }
+
+    // JS-DOS v7 Classic DOOM Engine Controllers
+    let doomDosInstance = null;
+    let doomInitialized = false;
+    let currentDoomVersion = "doom2";
+
+    const doomBundles = {
+      doom1: "https://cdn.dos.zone/original/2X/2/24b00b14f118580763440ecaddcc948f8cb94f14.jsdos", // Ultimate DOOM
+      doom2: "https://cdn.dos.zone/custom/dos/doom2.jsdos"                                           // DOOM II
+    };
+
+    function initRealDoom() {
+      const container = document.getElementById("jsdos-doom");
+      if (!container) return;
+
+      if (doomInitialized) {
+        if (doomDosInstance && doomDosInstance.unpause) {
+          doomDosInstance.unpause();
+          document.getElementById("doom-status-label").innerText = "RUNNING";
+          document.getElementById("doom-status-label").style.color = "#22c55e";
+          focusDoomEmulator();
+        }
+        return;
+      }
+
+      doomInitialized = true;
+      document.getElementById("doom-status-label").innerText = "LOADING CORE";
+      document.getElementById("doom-status-label").style.color = "#eab308";
+
+      const versionTitle = currentDoomVersion === "doom2" ? "DOOM II: Hell on Earth" : "Ultimate DOOM";
+
+      container.innerHTML = `
+        <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; color:#fff; font-family:'Courier New', monospace; background:#050505; text-align:center; box-sizing:border-box; padding:20px;">
+          <i class="fa-solid fa-skull" style="font-size:42px; color:#f43f5e; margin-bottom:12px; animation: pulse 1.5s infinite;"></i>
+          <div style="font-size:13px; font-weight:bold; margin-bottom:6px; color:#22c55e;">BOOTING MS-DOS DOOM...</div>
+          <div style="font-size:11px; color:#fff; margin-bottom:10px; font-weight:bold;">${versionTitle}</div>
+          <div style="font-size:9px; color:#a1a1aa; max-width: 280px;" id="doom-init-detail">Downloading WebAssembly compiler...</div>
+          <div style="width:160px; height:5px; background:#222; border-radius:3px; margin-top:10px; overflow:hidden; position:relative;">
+            <div style="position:absolute; top:0; left:0; width:60px; height:100%; background:#22c55e; border-radius:3px; animation: loading-progress 1.5s infinite ease-in-out;"></div>
+          </div>
+          <div style="font-size:8px; color:#555; margin-top:15px; max-width:320px; line-height:1.3;">ARROW KEYS to move | CTRL to Shoot | SPACE to use door/switch | ENTER to select options</div>
+        </div>
+      `;
+
+      emulators.pathPrefix = "https://js-dos.com/v7/build/releases/latest/js-dos/";
+
+      Dos(container)
+        .run(doomBundles[currentDoomVersion])
+        .then((ci) => {
+          doomDosInstance = ci;
+          document.getElementById("doom-status-label").innerText = "RUNNING";
+          document.getElementById("doom-status-label").style.color = "#22c55e";
+          
+          container.addEventListener("click", () => {
+            focusDoomEmulator();
+          });
+          
+          setTimeout(focusDoomEmulator, 500);
+        })
+        .catch((err) => {
+          console.error(err);
+          container.innerHTML = `
+            <div style="color:#ef4444; font-family:'Courier New', monospace; padding:20px; text-align:center; background:#0a0000; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+              <h4><i class="fa-solid fa-triangle-exclamation"></i> ENGINE CRASH</h4>
+              <p style="font-size:10px; margin-top:8px;">${err.message || err}</p>
+              <button onclick="doomInitialized=false; initRealDoom();" class="ide-btn" style="margin-top:12px; background:#ef4444; color:#fff; border-color:#ef4444;">Retry Load</button>
+            </div>
+          `;
+        });
+    }
+
+    function focusDoomEmulator() {
+      if (doomDosInstance) {
+        doomDosInstance.focus();
+      }
+    }
+
+    function pauseDoomEmulator() {
+      if (doomDosInstance && doomDosInstance.pause) {
+        doomDosInstance.pause();
+        document.getElementById("doom-status-label").innerText = "PAUSED";
+        document.getElementById("doom-status-label").style.color = "#ef4444";
+      }
+    }
+
+    function changeDoomVersion(version) {
+      if (version !== currentDoomVersion) {
+        currentDoomVersion = version;
+        if (doomDosInstance) {
+          try {
+            doomDosInstance.exit();
+          } catch(e) {}
+          doomDosInstance = null;
+        }
+        doomInitialized = false;
+        initRealDoom();
+      }
+    }
+
+    function restartDoom() {
+      if (confirm("Are you sure you want to restart DOOM Classic?")) {
+        if (doomDosInstance) {
+          try {
+            doomDosInstance.exit();
+          } catch(e) {}
+          doomDosInstance = null;
+        }
+        doomInitialized = false;
+        initRealDoom();
+      }
     }
   </script>
 </body>
