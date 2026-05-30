@@ -59,4 +59,5 @@ You can switch between applications instantly by pressing keys **F1 through F8**
    *Cargo compiles the kernel and runs the bootable ISO directly inside QEMU!*
 
 
-REALEASING ON 29TH OR 30TH WHEREVER U ARE! ON THAT DATE IS RELEASED
+**RELEASING ON 29TH OR 30TH WHEREVER U ARE! ON THAT DATE IS RELEASED**
+*Note: also if you cloned the repo then u can do the steps above the text above this note*
