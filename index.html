@@ -4003,11 +4003,48 @@
       }
     }
 
-    // Toggle via Alt+C shortcut
+    // Global Windows Keyboard Shortcuts Suite for UloOS Web Simulator
     window.addEventListener('keydown', (e) => {
-      if (e.altKey && e.key.toLowerCase() === 'c') {
+      // 1. Alt+C / Win+C -> Toggle AI Copilot
+      if ((e.altKey || e.metaKey) && e.key.toLowerCase() === 'c') {
         e.preventDefault();
         toggleAiCompanion();
+      }
+
+      // 2. Alt+F4 -> Close currently active window
+      if (e.altKey && e.key === 'F4') {
+        e.preventDefault();
+        if (activeWindow) {
+          closeWindow(activeWindow);
+        }
+      }
+
+      // 3. Alt+D / Win+D -> Show Desktop (Minimize all active windows)
+      if ((e.altKey || e.metaKey) && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        const windows = [
+          'win-explorer', 'win-code', 'win-browser', 'win-text', 'win-store',
+          'win-doom', 'win-paint', 'win-snipping', 'win-taskmanager',
+          'win-calculator', 'win-terminal', 'win-weather', 'win-music', 'win-notes'
+        ];
+        windows.forEach(id => {
+          const w = document.getElementById(id);
+          if (w && w.style.display !== 'none') {
+            minimizeWindow(id);
+          }
+        });
+      }
+
+      // 4. Alt+E / Win+E -> Open File Explorer
+      if ((e.altKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+        e.preventDefault();
+        openWindow('win-explorer');
+      }
+
+      // 5. Alt+R / Win+R -> Open Terminal (Run dialog)
+      if ((e.altKey || e.metaKey) && e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        openWindow('win-terminal');
       }
     });
 
