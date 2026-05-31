@@ -3986,6 +3986,20 @@
       if (drawer.classList.contains('open')) {
         updateAiSuggestions();
         document.getElementById('ai-chat-input').focus();
+
+        // Prompt for Gemini API Key if not already saved!
+        const savedKey = localStorage.getItem('uloos_gemini_api_key');
+        if (!savedKey) {
+          const userKey = prompt(
+            "🤖 Welcome to UloOS Copilot AI!\n\nIf you have a Gemini API Key, please paste it below to enable live responses powered by Gemini 2.5 Flash.\n\nTo get a free key:\n1. Search for 'aistudio.google.com' in your browser\n2. Login with your Google account and click 'Get API Key'.\n\nLeave blank to run in simulated offline mode:",
+            ""
+          );
+          if (userKey !== null) {
+            const trimmedKey = userKey.trim();
+            localStorage.setItem('uloos_gemini_api_key', trimmedKey);
+            document.getElementById('gemini-api-key').value = trimmedKey;
+          }
+        }
       }
     }
 
