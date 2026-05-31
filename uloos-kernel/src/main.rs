@@ -71,6 +71,8 @@ pub static MUSIC_SYNTH: Mutex<UloMusic> = Mutex::new(UloMusic::new());
 pub static STICKY_KEEP: Mutex<UloKeep> = Mutex::new(UloKeep::new());
 pub static CO_PILOT: Mutex<UloAi> = Mutex::new(UloAi::new());
 
+pub static mut IS_MAXIMISED: bool = false;
+
 // Global mouse cursor coordinate state
 pub static CURSOR_X: Mutex<usize> = Mutex::new(160);
 pub static CURSOR_Y: Mutex<usize> = Mutex::new(100);
@@ -224,9 +226,37 @@ pub extern "C" fn _start() -> ! {
                 let click_x = cx;
                 let click_y = cy;
 
-                // Close active window [X] click region
-                if current_app != ActiveApp::Desktop && click_y >= 16 && click_y <= 24 && click_x >= 295 && click_x <= 308 {
+                // Close, Maximize, Minimize button clicks
+                let mut close_clicked = false;
+                let mut max_clicked = false;
+                let mut min_clicked = false;
+                
+                if current_app != ActiveApp::Desktop {
+                    if IS_MAXIMISED {
+                        if click_y >= 2 && click_y <= 12 {
+                            if click_x >= 306 && click_x <= 318 { close_clicked = true; }
+                            else if click_x >= 294 && click_x <= 305 { max_clicked = true; }
+                            else if click_x >= 282 && click_x <= 293 { min_clicked = true; }
+                        }
+                    } else {
+                        if click_y >= 16 && click_y <= 24 {
+                            if click_x >= 295 && click_x <= 308 { close_clicked = true; }
+                            else if click_x >= 283 && click_x <= 294 { max_clicked = true; }
+                            else if click_x >= 271 && click_x <= 282 { min_clicked = true; }
+                        }
+                    }
+                }
+
+                if close_clicked {
                     current_app = ActiveApp::Desktop;
+                    IS_MAXIMISED = false;
+                } else if min_clicked {
+                    current_app = ActiveApp::Desktop;
+                } else if max_clicked {
+                    IS_MAXIMISED = !IS_MAXIMISED;
+                    sound::play_tone(800);
+                    for _ in 0..1_000 { core::arch::asm!("nop"); }
+                    sound::stop_speaker();
                 }
                 // Setup Login button click detection
                 else if current_app == ActiveApp::Login {
@@ -690,22 +720,38 @@ fn draw_win95_graphics_desktop(active: ActiveApp, start_open: bool) {
 
 // Premium window with rounded corners
 fn draw_gui_window(title: &str, x: usize, y: usize, w: usize, h: usize) {
-    VGA.draw_rect(x, y, w, h, 8);
-    VGA.draw_rect(x + 1, y + 1, w - 2, h - 2, 0);
+    let (wx, wy, ww, wh) = unsafe {
+        if IS_MAXIMISED {
+            (0, 0, 320, 185)
+        } else {
+            (x, y, w, h)
+        }
+    };
+
+    VGA.draw_rect(wx, wy, ww, wh, 8);
+    VGA.draw_rect(wx + 1, wy + 1, ww - 2, wh - 2, 0);
 
     // Rounded corners
-    VGA.draw_rect(x, y, 1, 1, 0); 
-    VGA.draw_rect(x + w - 1, y, 1, 1, 0); 
-    VGA.draw_rect(x, y + h - 1, 1, 1, 0); 
-    VGA.draw_rect(x + w - 1, y + h - 1, 1, 1, 0); 
+    VGA.draw_rect(wx, wy, 1, 1, 0); 
+    VGA.draw_rect(wx + ww - 1, wy, 1, 1, 0); 
+    VGA.draw_rect(wx, wy + wh - 1, 1, 1, 0); 
+    VGA.draw_rect(wx + ww - 1, wy + wh - 1, 1, 1, 0); 
 
     // Header bar
-    VGA.draw_rect(x + 2, y + 2, w - 4, 12, 8); 
-    VGA.draw_string(x + 6, y + 4, title, 15);
+    VGA.draw_rect(wx + 2, wy + 2, ww - 4, 12, 8); 
+    VGA.draw_string(wx + 6, wy + 4, title, 15);
+
+    // Minimize button [-]
+    VGA.draw_rect(wx + ww - 38, wy + 4, 10, 8, 1);
+    VGA.draw_string(wx + ww - 36, wy + 4, "-", 15);
+
+    // Maximize button [+]
+    VGA.draw_rect(wx + ww - 26, wy + 4, 10, 8, 2);
+    VGA.draw_string(wx + ww - 24, wy + 4, "+", 15);
 
     // Close button [X]
-    VGA.draw_rect(x + w - 14, y + 4, 10, 8, 4);
-    VGA.draw_string(x + w - 12, y + 4, "X", 15);
+    VGA.draw_rect(wx + ww - 14, wy + 4, 10, 8, 4);
+    VGA.draw_string(wx + ww - 12, wy + 4, "X", 15);
 }
 
 // Desktop icon helper

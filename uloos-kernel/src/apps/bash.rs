@@ -322,6 +322,86 @@ impl BashShell {
                     }
                 }
             }
+            "matrix" => {
+                self.add_line("Running Matrix code cascade... Press ESC to exit.");
+                unsafe {
+                    let mut streams = [0u8; 40];
+                    let mut lengths = [0u8; 40];
+                    let mut speeds = [0u8; 40];
+                    
+                    // Seed columns
+                    for col in 0..40 {
+                        streams[col] = (col * 7) as u8; // starting Y
+                        lengths[col] = (5 + (col % 8)) as u8;
+                        speeds[col] = (1 + (col % 3)) as u8;
+                    }
+
+                    VGA.draw_rect(0, 0, 320, 200, 0); // clear screen
+                    
+                    let mut frame = 0;
+                    loop {
+                        // Poll escape or key press to exit
+                        if let Some(key) = crate::keyboard::get_key() {
+                            match key {
+                                crate::keyboard::DecodedKey::Escape => break,
+                                _ => {}
+                            }
+                        }
+
+                        // Draw columns
+                        for col in 0..40 {
+                            let cx = col * 8;
+                            let cy = streams[col] as usize;
+                            
+                            // Erase old top trailing character
+                            let erase_y = if cy >= (lengths[col] as usize * 8) {
+                                cy - (lengths[col] as usize * 8)
+                            } else {
+                                0
+                            };
+                            VGA.draw_rect(cx, erase_y, 8, 8, 0);
+
+                            // Draw trail Y
+                            for i in 0..(lengths[col] as usize) {
+                                let y_val = cy.saturating_sub(i * 8);
+                                if y_val < 190 {
+                                    let char_idx = (frame + col + i) % 15;
+                                    let char_val = match char_idx {
+                                        0 => '0', 1 => '1', 2 => 'A', 3 => 'K', 4 => 'X', 
+                                        5 => 'Z', 6 => '7', 7 => '3', 8 => '#', 9 => '%',
+                                        _ => '*',
+                                    };
+                                    let color = if i == 0 { 15 } else if i < 3 { 10 } else { 2 }; // White head, Bright Green body, Dark Green tail
+                                    VGA.draw_char(cx, y_val, char_val, color);
+                                }
+                            }
+
+                            // Advance Y
+                            streams[col] = ((streams[col] as usize + speeds[col] as usize) % 200) as u8;
+                        }
+
+                        VGA.swap_buffers();
+                        
+                        // regulate speed
+                        for _ in 0..40_000 {
+                            core::arch::asm!("nop");
+                        }
+                        frame += 1;
+                    }
+
+                    // Restore normal screen state
+                    VGA.draw_rect(0, 0, 320, 200, 0);
+                }
+            }
+            "maximise" | "maximize" => {
+                unsafe {
+                    crate::IS_MAXIMISED = true;
+                }
+                self.add_line("Window maximized successfully.");
+            }
+            "minimise" | "minimize" => {
+                app_switch = Some("exit");
+            }
             "doom" => app_switch = Some("doom"),
             "office" => app_switch = Some("office"),
             "explorer" => app_switch = Some("explorer"),
