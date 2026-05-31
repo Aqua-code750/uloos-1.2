@@ -4139,7 +4139,15 @@
         let reply = "I am the UloOS Core Assistant. Ask me about files, code editing, command shell syntax, settings, themes, or App Store publishing presets!";
         const normQuery = query.toLowerCase();
 
-        if (normQuery.includes('html') || normQuery.includes('template') || normQuery.includes('generate')) {
+        if (normQuery.includes('days') || normQuery.includes('time') || normQuery.includes('why') || normQuery.includes('make')) {
+          reply = `🤖 **UloOS was crafted in ONLY 3 DAYS!** 🚀
+Why? To build the ultimate bare-metal, pure-Rust OS featuring premium 3D graphics, gaming integration (Isle of Doom), and real PC speaker retro chimes, all in record speed!`;
+        } else if (normQuery.includes('key') || normQuery.includes('gemini')) {
+          reply = `🤖 **How to get a Gemini API Key**:
+1. Press **[Ctrl + Alt + F]** on your QEMU screen (or open your local browser).
+2. Search **'aistudio.google.com'** & login with your Google account.
+3. Create your free API Key, then paste it in the Copilot Key field above!`;
+        } else if (normQuery.includes('html') || normQuery.includes('template') || normQuery.includes('generate')) {
           reply = `🤖 Here is a live **HTML5 Template** you can copy into UloCode Studio:
 \`\`\`html
 <!DOCTYPE html>
