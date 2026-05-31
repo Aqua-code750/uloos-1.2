@@ -165,3 +165,21 @@ pub fn set_dynamic_vga_palette(theme: usize) {
     }
 }
 
+/// Programs the VGA DAC with DOOM's full 256-color palette.
+/// This uses the DOOM engine's actual PLAYPAL colors so the game
+/// renders with authentic visuals on bare-metal VGA Mode 13h.
+#[cfg(not(no_doom_engine))]
+pub fn set_doom_vga_palette() {
+    unsafe {
+        // Import the DOOM palette from the doom_game module
+        let palette = &crate::doom_game::DOOM_PALETTE_RGB;
+        for (i, &(r, g, b)) in palette.iter().enumerate() {
+            outb(0x3C8, i as u8);
+            outb(0x3C9, r);
+            outb(0x3C9, g);
+            outb(0x3C9, b);
+        }
+    }
+}
+
+

@@ -1,5 +1,11 @@
 #![no_std]
 #![no_main]
+#![feature(abi_x86_interrupt)]
+#![feature(c_variadic)]
+#![cfg_attr(not(no_doom_engine), feature(alloc_error_handler))]
+
+#[cfg(not(no_doom_engine))]
+extern crate alloc;
 
 use core::panic::PanicInfo;
 
@@ -10,6 +16,11 @@ mod mouse;
 mod vga_driver;
 mod vga_mode;
 mod sound;
+#[cfg(not(no_doom_engine))]
+mod allocator;
+mod timer;
+#[cfg(not(no_doom_engine))]
+mod doom_game;
 
 use keyboard::{get_key, DecodedKey};
 use apps::bash::BashShell;
@@ -70,6 +81,13 @@ pub extern "C" fn _start() -> ! {
     for _ in 0..100_000 {
         unsafe { core::arch::asm!("nop") }
     }
+
+    // 1.5. Initialize the heap allocator (required for DOOM engine)
+    #[cfg(not(no_doom_engine))]
+    allocator::init_heap();
+
+    // 1.6. Initialize PIT timer (provides millisecond timing for DOOM)
+    timer::init_pit();
 
     // Seed UloCode default notes
     {
@@ -149,8 +167,21 @@ pub extern "C" fn _start() -> ! {
                 BROWSER.lock().draw();
             }
             ActiveApp::Doom => {
-                draw_gui_window("TUI DOOM", 10, 15, 300, 160);
-                DOOM_GAME.lock().draw();
+                #[cfg(not(no_doom_engine))]
+                {
+                    // Launch REAL DOOM — this takes over the main loop!
+                    unsafe { doom_game::run_doom(); }
+                    // When DOOM exits, restore desktop palette and return to desktop
+                    let theme = SYSTEM_SETTINGS.lock().active_theme;
+                    vga_mode::set_dynamic_vga_palette(theme);
+                    current_app = ActiveApp::Desktop;
+                }
+                #[cfg(no_doom_engine)]
+                {
+                    // Fallback: show the TUI raycaster DOOM if real engine not compiled
+                    draw_gui_window("Isle of Doom", 10, 15, 300, 160);
+                    DOOM_GAME.lock().draw();
+                }
             }
             ActiveApp::Settings => {
                 draw_gui_window("System Settings", 10, 15, 300, 160);
@@ -552,7 +583,7 @@ fn draw_win95_graphics_desktop(active: ActiveApp, start_open: bool) {
         ActiveApp::Numbers => VGA.draw_string(icon_offset_x, 188, "[Numbers]", 11),
         ActiveApp::Mail => VGA.draw_string(icon_offset_x, 188, "[UloMail]", 11),
         ActiveApp::Browser => VGA.draw_string(icon_offset_x, 188, "[Chrome]", 11),
-        ActiveApp::Doom => VGA.draw_string(icon_offset_x, 188, "[DOOM]", 11),
+        ActiveApp::Doom => VGA.draw_string(icon_offset_x, 188, "[DOOM!]", 11),
         ActiveApp::Settings => VGA.draw_string(icon_offset_x, 188, "[Settings]", 11),
         ActiveApp::Store => VGA.draw_string(icon_offset_x, 188, "[Store]", 11),
         ActiveApp::Weather => VGA.draw_string(icon_offset_x, 188, "[Weather]", 11),
@@ -574,7 +605,7 @@ fn draw_win95_graphics_desktop(active: ActiveApp, start_open: bool) {
         VGA.draw_string(58, 38, "1. Bash Shell  2. Explorer", 15);
         VGA.draw_string(58, 50, "3. UloCode     4. UloSlides", 15);
         VGA.draw_string(58, 62, "5. UloNumbers  6. UloMail", 15);
-        VGA.draw_string(58, 74, "7. Chrome      8. TUI DOOM", 15);
+        VGA.draw_string(58, 74, "7. Chrome      8. DOOM", 15);
         VGA.draw_string(58, 86, "9. App Store   0. Settings", 15);
         VGA.draw_string(58, 98, "A. Weather     B. Music Synth", 15);
         VGA.draw_string(58, 110, "C. UloKeep     D. AI Copilot", 15);
