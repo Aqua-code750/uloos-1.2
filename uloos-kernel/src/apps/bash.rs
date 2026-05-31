@@ -139,7 +139,8 @@ impl BashShell {
             "help" => {
                 self.add_line("Commands: help, ls, cd, cat, mkdir, touch,");
                 self.add_line("          rm, neofetch, clear, whoami, uname,");
-                self.add_line("          doom, office, explorer, exit");
+                self.add_line("          matrix, cowsay, sing, fortune,");
+                self.add_line("          maximise, minimise, doom, office, exit");
             }
             "neofetch" => {
                 self.add_line("UloOS 1.2 x86_64 QEMU");
