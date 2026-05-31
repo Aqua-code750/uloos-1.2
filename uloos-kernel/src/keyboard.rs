@@ -18,9 +18,18 @@ pub enum DecodedKey {
     Escape,
     Tab,
     F1, F2, F3, F4, F5, F6, F7, F8,
+    Copy,
+    Cut,
+    Paste,
+    CloseApp,
+    ShowDesktop,
+    OpenExplorer,
+    OpenTerminal,
 }
 
 pub static mut IS_SHIFT_PRESSED: bool = false;
+pub static mut IS_CTRL_PRESSED: bool = false;
+pub static mut IS_ALT_PRESSED: bool = false;
 
 pub fn get_key() -> Option<DecodedKey> {
     unsafe {
@@ -41,10 +50,50 @@ pub fn get_key() -> Option<DecodedKey> {
                 IS_SHIFT_PRESSED = false;
                 return None;
             }
+            // Check ctrl press
+            if scancode == 0x1D {
+                IS_CTRL_PRESSED = true;
+                return None;
+            }
+            // Check ctrl release
+            if scancode == 0x9D {
+                IS_CTRL_PRESSED = false;
+                return None;
+            }
+            // Check alt press
+            if scancode == 0x38 {
+                IS_ALT_PRESSED = true;
+                return None;
+            }
+            // Check alt release
+            if scancode == 0xB8 {
+                IS_ALT_PRESSED = false;
+                return None;
+            }
 
             // We ignore key releases (scan codes with bit 7 set, i.e., >= 0x80)
             if scancode >= 0x80 {
                 return None;
+            }
+
+            // Check combinations
+            if IS_ALT_PRESSED {
+                match scancode {
+                    0x3E => return Some(DecodedKey::CloseApp),     // Alt + F4
+                    0x20 => return Some(DecodedKey::ShowDesktop),  // Alt + D
+                    0x12 => return Some(DecodedKey::OpenExplorer), // Alt + E
+                    0x13 => return Some(DecodedKey::OpenTerminal), // Alt + R
+                    _ => {}
+                }
+            }
+
+            if IS_CTRL_PRESSED {
+                match scancode {
+                    0x2E => return Some(DecodedKey::Copy),  // Ctrl + C
+                    0x2D => return Some(DecodedKey::Cut),   // Ctrl + X
+                    0x2F => return Some(DecodedKey::Paste), // Ctrl + V
+                    _ => {}
+                }
             }
 
             return match scancode {

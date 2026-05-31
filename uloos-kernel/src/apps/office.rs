@@ -1,4 +1,33 @@
 use crate::vga_driver::VGA;
+use spin::Mutex;
+
+pub static CLIPBOARD: Mutex<ClipboardBuffer> = Mutex::new(ClipboardBuffer::new());
+
+pub struct ClipboardBuffer {
+    pub data: [u8; 256],
+    pub len: usize,
+}
+
+impl ClipboardBuffer {
+    pub const fn new() -> Self {
+        ClipboardBuffer {
+            data: [0; 256],
+            len: 0,
+        }
+    }
+    
+    pub fn set_text(&mut self, text: &[u8]) {
+        let copy_len = if text.len() > 256 { 256 } else { text.len() };
+        self.len = copy_len;
+        for i in 0..copy_len {
+            self.data[i] = text[i];
+        }
+    }
+
+    pub fn get_text(&self) -> &[u8] {
+        &self.data[..self.len]
+    }
+}
 
 // ==========================================
 // ULOCODE STUDIO: VS Code Clone Editor
@@ -316,6 +345,46 @@ impl UloCode {
         let active_tab = self.active_tab;
         if self.lens[active_tab] > 0 {
             self.lens[active_tab] -= 1;
+        }
+    }
+
+    pub fn handle_copy(&self) {
+        let active_tab = self.active_tab;
+        let text = &self.buffers[active_tab][..self.lens[active_tab]];
+        CLIPBOARD.lock().set_text(text);
+        unsafe {
+            crate::sound::play_tone(700);
+            for _ in 0..3_000 { core::arch::asm!("nop") }
+            crate::sound::stop_speaker();
+        }
+    }
+
+    pub fn handle_cut(&mut self) {
+        let active_tab = self.active_tab;
+        let text = &self.buffers[active_tab][..self.lens[active_tab]];
+        CLIPBOARD.lock().set_text(text);
+        self.lens[active_tab] = 0;
+        unsafe {
+            crate::sound::play_tone(600);
+            for _ in 0..3_000 { core::arch::asm!("nop") }
+            crate::sound::stop_speaker();
+        }
+    }
+
+    pub fn handle_paste(&mut self) {
+        let active_tab = self.active_tab;
+        let clip = CLIPBOARD.lock();
+        let clip_text = clip.get_text();
+        for &byte in clip_text {
+            if self.lens[active_tab] < 490 {
+                self.buffers[active_tab][self.lens[active_tab]] = byte;
+                self.lens[active_tab] += 1;
+            }
+        }
+        unsafe {
+            crate::sound::play_tone(800);
+            for _ in 0..3_000 { core::arch::asm!("nop") }
+            crate::sound::stop_speaker();
         }
     }
 }
@@ -1211,6 +1280,50 @@ impl UloKeep {
             }
         }
     }
+
+    pub fn handle_copy(&self) {
+        let idx = self.selected;
+        let len = self.note_lens[idx];
+        let text = &self.notes[idx][..len];
+        CLIPBOARD.lock().set_text(text);
+        unsafe {
+            crate::sound::play_tone(700);
+            for _ in 0..3_000 { core::arch::asm!("nop") }
+            crate::sound::stop_speaker();
+        }
+    }
+
+    pub fn handle_cut(&mut self) {
+        let idx = self.selected;
+        let len = self.note_lens[idx];
+        let text = &self.notes[idx][..len];
+        CLIPBOARD.lock().set_text(text);
+        self.note_lens[idx] = 0;
+        unsafe {
+            crate::sound::play_tone(600);
+            for _ in 0..3_000 { core::arch::asm!("nop") }
+            crate::sound::stop_speaker();
+        }
+    }
+
+    pub fn handle_paste(&mut self) {
+        let idx = self.selected;
+        let clip = CLIPBOARD.lock();
+        let clip_text = clip.get_text();
+        self.note_lens[idx] = 0;
+        for &byte in clip_text {
+            let len = self.note_lens[idx];
+            if len < 56 {
+                self.notes[idx][len] = byte;
+                self.note_lens[idx] += 1;
+            }
+        }
+        unsafe {
+            crate::sound::play_tone(800);
+            for _ in 0..3_000 { core::arch::asm!("nop") }
+            crate::sound::stop_speaker();
+        }
+    }
 }
 
 // ==========================================
@@ -1437,6 +1550,29 @@ impl UloAi {
             // clear buffer
             self.query_buffer = [0; 80];
             self.query_len = 0;
+        }
+    }
+
+    pub fn handle_paste(&mut self) {
+        let clip = CLIPBOARD.lock();
+        let clip_text = clip.get_text();
+        for &byte in clip_text {
+            if self.show_key_prompt {
+                if self.key_len < 32 && byte >= b' ' && byte <= b'~' {
+                    self.key_buffer[self.key_len] = byte;
+                    self.key_len += 1;
+                }
+            } else {
+                if self.query_len < 25 && byte >= b' ' && byte <= b'~' {
+                    self.query_buffer[self.query_len] = byte;
+                    self.query_len += 1;
+                }
+            }
+        }
+        unsafe {
+            crate::sound::play_tone(800);
+            for _ in 0..3_000 { core::arch::asm!("nop") }
+            crate::sound::stop_speaker();
         }
     }
 }
