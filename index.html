@@ -1357,6 +1357,11 @@
           <div class="ai-title"><i class="fa-solid fa-robot" style="color:#00f0ff; animation: pulse 2s infinite;"></i> UloOS Copilot AI</div>
           <i class="fa-solid fa-xmark" onclick="toggleAiCompanion()" style="cursor:pointer; color:#64748b; font-size:14px;"></i>
         </div>
+        <!-- Gemini API Key Input -->
+        <div style="padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.2);">
+          <i class="fa-solid fa-key" style="color: var(--accent-color); font-size: 11px;"></i>
+          <input type="password" id="gemini-api-key" placeholder="Enter Gemini API Key (Optional)..." onchange="saveGeminiKey()" style="flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 11px;">
+        </div>
         <div class="ai-chat-area" id="ai-chat-area">
           <div class="chat-bubble ai">
             🤖 Hello! I am the <strong>UloOS Copilot AI</strong>. I am available anytime to help you write code, explain shell commands, manage VFS files, publish apps, or personalize your interface. How can I help you today?
@@ -4074,6 +4079,54 @@
       chatArea.appendChild(loaderBubble);
       chatArea.scrollTop = chatArea.scrollHeight;
 
+      // Check for Gemini API key
+      const geminiKeyInput = document.getElementById('gemini-api-key');
+      const geminiKey = geminiKeyInput ? geminiKeyInput.value.trim() : '';
+
+      if (geminiKey && geminiKey.startsWith('AIza')) {
+        // Call Real Gemini API
+        fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: `You are UloOS Copilot AI, integrated directly inside UloOS (a custom bare-metal x86_64 Rust operating system). Keep answers direct, friendly, and under 4-5 sentences. Format cleanly. User query: ${query}` }]
+            }]
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          const loader = document.getElementById('copilot-typing-loader');
+          if (loader) loader.remove();
+
+          const replyBubble = document.createElement('div');
+          replyBubble.className = 'chat-bubble ai';
+
+          let text = "";
+          try {
+            text = data.candidates[0].content.parts[0].text;
+          } catch(e) {
+            text = "🤖 Parsing error. Please verify your Gemini API key and try again.";
+          }
+
+          replyBubble.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          chatArea.appendChild(replyBubble);
+          chatArea.scrollTop = chatArea.scrollHeight;
+          updateAiSuggestions();
+        })
+        .catch(err => {
+          const loader = document.getElementById('copilot-typing-loader');
+          if (loader) loader.remove();
+
+          const replyBubble = document.createElement('div');
+          replyBubble.className = 'chat-bubble ai';
+          replyBubble.innerText = "🤖 Connection failed. Please check your network or key.";
+          chatArea.appendChild(replyBubble);
+          chatArea.scrollTop = chatArea.scrollHeight;
+        });
+        return;
+      }
+
       setTimeout(() => {
         // Remove loader
         const loader = document.getElementById('copilot-typing-loader');
@@ -5047,6 +5100,21 @@ Any console logs print directly in the scrolling Console logs debugger terminal 
         initRealDoom();
       }
     }
+
+    function saveGeminiKey() {
+      const key = document.getElementById('gemini-api-key').value.trim();
+      localStorage.setItem('uloos_gemini_api_key', key);
+    }
+
+    function loadGeminiKey() {
+      const savedKey = localStorage.getItem('uloos_gemini_api_key');
+      if (savedKey) {
+        document.getElementById('gemini-api-key').value = savedKey;
+      }
+    }
+
+    // Load key on startup
+    loadGeminiKey();
   </script>
 </body>
 </html>
