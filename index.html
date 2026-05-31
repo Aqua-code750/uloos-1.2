@@ -5108,7 +5108,7 @@ Any console logs print directly in the scrolling Console logs debugger terminal 
 
     function loadGeminiKey() {
       const savedKey = localStorage.getItem('uloos_gemini_api_key');
-      if (savedKey) {
+      if (savedKey !== null) {
         document.getElementById('gemini-api-key').value = savedKey;
       }
     }
