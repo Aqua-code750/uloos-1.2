@@ -372,60 +372,6 @@ pub extern "C" fn _start() -> ! {
         // Read Keyboard events
         if let Some(key) = get_key() {
             match key {
-                DecodedKey::CloseApp => {
-                    current_app = ActiveApp::Desktop;
-                    unsafe {
-                        sound::play_tone(700);
-                        for _ in 0..2_000 { core::arch::asm!("nop") }
-                        sound::stop_speaker();
-                    }
-                }
-                DecodedKey::ShowDesktop => {
-                    current_app = ActiveApp::Desktop;
-                    unsafe {
-                        sound::play_tone(700);
-                        for _ in 0..2_000 { core::arch::asm!("nop") }
-                        sound::stop_speaker();
-                    }
-                }
-                DecodedKey::OpenExplorer => {
-                    current_app = ActiveApp::Explorer;
-                    unsafe {
-                        sound::play_tone(700);
-                        for _ in 0..2_000 { core::arch::asm!("nop") }
-                        sound::stop_speaker();
-                    }
-                }
-                DecodedKey::OpenTerminal => {
-                    current_app = ActiveApp::Bash;
-                    unsafe {
-                        sound::play_tone(700);
-                        for _ in 0..2_000 { core::arch::asm!("nop") }
-                        sound::stop_speaker();
-                    }
-                }
-                DecodedKey::Copy => {
-                    match current_app {
-                        ActiveApp::Text => TEXT_EDITOR.lock().handle_copy(),
-                        ActiveApp::Keep => STICKY_KEEP.lock().handle_copy(),
-                        _ => {}
-                    }
-                }
-                DecodedKey::Cut => {
-                    match current_app {
-                        ActiveApp::Text => TEXT_EDITOR.lock().handle_cut(),
-                        ActiveApp::Keep => STICKY_KEEP.lock().handle_cut(),
-                        _ => {}
-                    }
-                }
-                DecodedKey::Paste => {
-                    match current_app {
-                        ActiveApp::Text => TEXT_EDITOR.lock().handle_paste(),
-                        ActiveApp::Keep => STICKY_KEEP.lock().handle_paste(),
-                        ActiveApp::Ai => CO_PILOT.lock().handle_paste(),
-                        _ => {}
-                    }
-                }
                 DecodedKey::Ascii(c) => {
                     match current_app {
                         ActiveApp::Login => {
