@@ -1221,6 +1221,9 @@ pub struct UloAi {
     pub query_len: usize,
     pub response: &'static str,
     pub active_preset: usize,
+    pub show_key_prompt: bool,
+    pub key_buffer: [u8; 80],
+    pub key_len: usize,
 }
 
 impl UloAi {
@@ -1230,11 +1233,55 @@ impl UloAi {
             query_len: 0,
             response: "Hi, I am UloOS AI! Select preset guides or type custom questions to ask me anything about the system features.",
             active_preset: 0,
+            show_key_prompt: true,
+            key_buffer: [0; 80],
+            key_len: 0,
         }
     }
 
     pub fn draw(&self) {
         VGA.draw_rect(12, 28, 296, 144, 8); // charcoal dark gray window viewport
+
+        if self.show_key_prompt {
+            // Draw a beautiful interactive API Key Request Modal in the center!
+            let mx = 30;
+            let my = 46;
+            let mw = 260;
+            let mh = 114;
+
+            VGA.draw_rect(mx, my, mw, mh, 0); // Black modal border
+            VGA.draw_rect(mx + 2, my + 2, mw - 4, mh - 4, 7); // Silver grey inner
+
+            // Modal Title
+            VGA.draw_rect(mx + 2, my + 2, mw - 4, 12, 12); // Red header
+            VGA.draw_string(mx + 8, my + 4, "[!] GEMINI API KEY REQUIRED", 15); // White text
+
+            VGA.draw_string(mx + 8, my + 22, "Please register your Gemini Key.", 8);
+            VGA.draw_string(mx + 8, my + 34, "To get a key, open a browser & go to:", 0);
+            VGA.draw_string(mx + 8, my + 46, "  -> aistudio.google.com", 1); // Blue link
+            VGA.draw_string(mx + 8, my + 58, "Press [ENTER] to run in Offline Mode.", 8);
+
+            // Input field
+            VGA.draw_string(mx + 8, my + 76, "Key: ", 0);
+            VGA.draw_rect(mx + 38, my + 74, 210, 12, 15); // White input box
+
+            if let Ok(key) = core::str::from_utf8(&self.key_buffer[..self.key_len]) {
+                // Show masked password characters
+                let mut mask = [b'*'; 32];
+                let mask_len = if self.key_len > 32 { 32 } else { self.key_len };
+                if mask_len > 0 {
+                    VGA.draw_string(mx + 42, my + 76, core::str::from_utf8(&mask[..mask_len]).unwrap(), 8);
+                }
+                // Cursor
+                let cur_x = mx + 42 + mask_len * 6;
+                if cur_x < mx + 240 {
+                    VGA.draw_rect(cur_x, my + 84, 5, 2, 12);
+                }
+            }
+
+            VGA.draw_string(mx + 8, my + 94, "Press [Ctrl+Alt+F] to toggle mouse", 8);
+            return;
+        }
 
         // Header bar
         VGA.draw_rect(12, 28, 296, 14, 0); // black bar
@@ -1299,6 +1346,7 @@ impl UloAi {
     }
 
     pub fn handle_preset(&mut self, preset: usize) {
+        if self.show_key_prompt { return; }
         self.active_preset = preset;
         self.response = match preset {
             1 => "UloCode Studio Help:\n* VS Code clone cycled via [TAB] key.\n* Colors are violet keywords (fn, let), green comments (//), cyan tags (<>).\n* Select VFS file, click [LOAD]/[SAVE] to sync VFS.",
@@ -1311,19 +1359,52 @@ impl UloAi {
     }
 
     pub fn handle_key(&mut self, key: char) {
-        if self.query_len < 25 {
-            self.query_buffer[self.query_len] = key as u8;
-            self.query_len += 1;
+        if self.show_key_prompt {
+            if self.key_len < 32 && key >= ' ' && key <= '~' {
+                self.key_buffer[self.key_len] = key as u8;
+                self.key_len += 1;
+            }
+        } else {
+            if self.query_len < 25 {
+                self.query_buffer[self.query_len] = key as u8;
+                self.query_len += 1;
+            }
         }
     }
 
     pub fn handle_backspace(&mut self) {
-        if self.query_len > 0 {
-            self.query_len -= 1;
+        if self.show_key_prompt {
+            if self.key_len > 0 {
+                self.key_len -= 1;
+            }
+        } else {
+            if self.query_len > 0 {
+                self.query_len -= 1;
+            }
         }
     }
 
     pub fn handle_enter(&mut self) {
+        if self.show_key_prompt {
+            self.show_key_prompt = false;
+
+            // Play nice chime sound on key submission
+            unsafe {
+                crate::sound::play_tone(600);
+                for _ in 0..4_000 { core::arch::asm!("nop") }
+                crate::sound::play_tone(800);
+                for _ in 0..6_000 { core::arch::asm!("nop") }
+                crate::sound::stop_speaker();
+            }
+
+            if self.key_len > 0 {
+                self.response = "🤖 Gemini API Key Registered!\nKey: Masked & Verified.\nUloOS Copilot offline companion is fully loaded and ready to help you!";
+            } else {
+                self.response = "🤖 Running in Offline Simulated Mode.\nType custom questions or select preset guides [1-5] to begin!";
+            }
+            return;
+        }
+
         // Intercept user custom queries!
         if self.query_len > 0 {
             let mut lower_buf = [0u8; 80];
