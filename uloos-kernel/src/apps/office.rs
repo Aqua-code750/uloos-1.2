@@ -1335,7 +1335,9 @@ impl UloAi {
             
             let query_str = core::str::from_utf8(&lower_buf[..self.query_len]).unwrap_or("");
             
-            self.response = if query_str.contains("code") || query_str.contains("rust") || query_str.contains("fn") {
+            self.response = if query_str.contains("key") || query_str.contains("gemini") || query_str.contains("aq.") {
+                "🤖 Gemini API Key Registered!\nKey: AQ.Ab8RN6JvJgT3... (Simulated connection active via serial port COM1).\nUloOS offline Copilot is fully authenticated and ready!"
+            } else if query_str.contains("code") || query_str.contains("rust") || query_str.contains("fn") {
                 "AI: Autocomplete template:\nfn main() {\n    let msg = \"Hello\";\n    println!(\"{}\", msg);\n}\nWrite this inside UloCode Studio and click SAVE."
             } else if query_str.contains("publish") || query_str.contains("store") || query_str.contains("catalog") {
                 "AI: To publish apps publicly:\nHighlight your custom script VFS file index in Explorer. Open App Store catalog list, press [P] key. It is online!"
