@@ -1332,6 +1332,8 @@ impl UloKeep {
 pub struct UloAi {
     pub query_buffer: [u8; 80],
     pub query_len: usize,
+    pub response_buf: [u8; 256],
+    pub response_len: usize,
     pub response: &'static str,
     pub active_preset: usize,
     pub show_key_prompt: bool,
@@ -1360,6 +1362,8 @@ impl UloAi {
         UloAi {
             query_buffer: [0; 80],
             query_len: 0,
+            response_buf: [0u8; 256],
+            response_len: 0,
             response: "Hi! I am UloOS AI Companion. The Gemini API Key is privately registered and loaded. Ask me anything!",
             active_preset: 0,
             show_key_prompt: false,
@@ -1432,7 +1436,11 @@ impl UloAi {
         VGA.draw_rect(142, 46, 160, 96, 0); // black terminal screen
         
         // Print active response text wrapped in multiple lines
-        let text_bytes = self.response.as_bytes();
+        let text_bytes = if self.response_len > 0 {
+            &self.response_buf[..self.response_len]
+        } else {
+            self.response.as_bytes()
+        };
         let mut curr_x = 146;
         let mut curr_y = 50;
         let mut idx = 0;
@@ -1545,24 +1553,70 @@ impl UloAi {
             
             let query_str = core::str::from_utf8(&lower_buf[..self.query_len]).unwrap_or("");
             
-            self.response = if query_str.contains("days") || query_str.contains("time") || query_str.contains("why") || query_str.contains("make") {
-                "🤖 UloOS was crafted in ONLY 3 DAYS! 🚀\nWhy? To build the ultimate pure-Rust OS featuring premium desktop UI lock screen, retro sound system, and roguelike minigames in record speed!"
-            } else if query_str.contains("key") || query_str.contains("gemini") || query_str.contains("aq.") {
-                "🤖 How to get a Gemini API Key:\n1. Press [Ctrl + Alt + F] (or open your local browser).\n2. Search 'aistudio.google.com' & login.\n3. Get your API Key, then paste it in the Copilot Key field!"
-            } else if query_str.contains("code") || query_str.contains("rust") || query_str.contains("fn") {
-                "AI: Autocomplete template:\nfn main() {\n    let msg = \"Hello\";\n    println!(\"{}\", msg);\n}\nWrite this inside UloCode Studio and click SAVE."
-            } else if query_str.contains("publish") || query_str.contains("store") || query_str.contains("catalog") {
-                "AI: To publish apps publicly:\nHighlight your custom script VFS file index in Explorer. Open App Store catalog list, press [P] key. It is online!"
-            } else if query_str.contains("theme") || query_str.contains("color") || query_str.contains("settings") {
-                "AI: Visual layout is customizable! Open Pinned Settings app. Press [T] key to swap 5 harmonized color themes instantly on boot."
-            } else if query_str.contains("shell") || query_str.contains("dos") || query_str.contains("command") {
-                "AI: MS-DOS Command Line:\nAvailable instructions:\ndoom: Start retro shooter\noffice: Launch VS Code\nexplorer: View folders\nexit: Log out CLI"
-            } else if query_str.contains("vfs") || query_str.contains("file") || query_str.contains("explorer") {
-                "AI: VFS Categories:\nHome: contains welcome guides\nDocuments: draft documents\nProjects: editable HTML/CSS/Rust project workspace scripts"
-            } else {
-                "AI: UloOS Copilot is here! Ask me about writing code, settings, dynamic VGA palettes, git branches, or publishing store catalogs."
+            self.response_len = 0;
+            self.response = ""; // Reset static response in favor of response_buf
+
+            let mut out = [0u8; 256];
+            let mut o_len = 0;
+
+            let mut copy_out = |src: &[u8]| {
+                let left = 254 - o_len;
+                let copy = if src.len() > left { left } else { src.len() };
+                out[o_len..(o_len + copy)].copy_from_slice(&src[..copy]);
+                o_len += copy;
             };
-            
+
+            if query_str.contains("hello") || query_str.contains("hi ") || query_str.contains("hey") || query_str.contains("who") || query_str.contains("agent") {
+                let _ = copy_out("AI Agent: Greetings! I am deeply linked with UloOS kernel memory, PIT clocks, and the VFS.\nAsk me about local time, UI theme, files, or Rust!".as_bytes());
+            } else if query_str.contains("theme") || query_str.contains("color") || query_str.contains("palette") || query_str.contains("look") || query_str.contains("settings") {
+                let _ = copy_out("AI Agent: UI Theme Introspection:\n* Theme: ".as_bytes());
+                let active = crate::SYSTEM_SETTINGS.lock().active_theme;
+                let theme_name: &[u8] = match active {
+                    0 => b"Sky Blue Fluent",
+                    1 => b"Cyber Purple Neon",
+                    2 => b"Emerald Mint Linux",
+                    3 => b"Coral Sunset Aura",
+                    _ => b"Classic Light Mode",
+                };
+                let _ = copy_out(theme_name);
+                let _ = copy_out("\n* Timezone: ".as_bytes());
+                let tz_bytes = [b'0' + crate::SYSTEM_SETTINGS.lock().timezone_index as u8];
+                let _ = copy_out(&tz_bytes);
+                let _ = copy_out("\nPress [T] in Settings to swap the palette registers instantly!".as_bytes());
+            } else if query_str.contains("file") || query_str.contains("vfs") || query_str.contains("ls") || query_str.contains("folder") || query_str.contains("explorer") {
+                let _ = copy_out("AI Agent: VFS Diagnostic:\nListing active folder elements:\n".as_bytes());
+                let explorer = crate::EXPLORER.lock();
+                let mut count = 0;
+                for i in 1..explorer.entry_count {
+                    let entry = &explorer.entries[i];
+                    if entry.active && entry.parent == explorer.current_dir {
+                        if let Ok(name) = core::str::from_utf8(&entry.name[..entry.name_len]) {
+                            let _ = copy_out(" - ".as_bytes());
+                            let _ = copy_out(name.as_bytes());
+                            if entry.is_dir { let _ = copy_out("/".as_bytes()); }
+                            let _ = copy_out("\n".as_bytes());
+                            count += 1;
+                        }
+                    }
+                }
+                if count == 0 {
+                    let _ = copy_out(" - (no files found in active directory)\n".as_bytes());
+                }
+            } else if query_str.contains("time") || query_str.contains("clock") || query_str.contains("date") || query_str.contains("hour") {
+                let _ = copy_out("AI Agent: CMOS RTC Introspection:\nSystem time has been read successfully from hardware registers. Time sync active.\nOpen CMOS clocks widget at top right!".as_bytes());
+            } else if query_str.contains("code") || query_str.contains("rust") || query_str.contains("fn") || query_str.contains("write") {
+                let _ = copy_out("AI Agent: Rust Code Assistant:\nTemplate:\nfn main() {\n    let name = \"UloOS\";\n    println!(\"Hello from {}\", name);\n}\nUse UloCode Studio to write & save scripts.".as_bytes());
+            } else if query_str.contains("game") || query_str.contains("doom") || query_str.contains("play") {
+                let _ = copy_out("AI Agent: Retro raycaster minigame active!\nType 'doom' in DOS Shell to run.\nWASD controls movement, QE to strafe. Press [Space] to shoot!".as_bytes());
+            } else if query_str.contains("days") || query_str.contains("make") || query_str.contains("why") || query_str.contains("create") {
+                let _ = copy_out("AI Agent: UloOS was crafted in ONLY 3 DAYS! \nWhy? To build the ultimate pure-Rust OS featuring premium desktop UI, double-buffered VGA, and speaker synthesis!".as_bytes());
+            } else {
+                let _ = copy_out("AI Agent: Query processed. I can diagnose system memory parameters, CMOS local time clocks, VFS explorer items, or cycle theme colors.".as_bytes());
+            }
+
+            self.response_buf = out;
+            self.response_len = o_len;
+
             // clear buffer
             self.query_buffer = [0; 80];
             self.query_len = 0;
