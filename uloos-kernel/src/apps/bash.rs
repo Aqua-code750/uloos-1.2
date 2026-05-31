@@ -402,6 +402,54 @@ impl BashShell {
             "minimise" | "minimize" => {
                 app_switch = Some("exit");
             }
+            "cowsay" => {
+                if arg.is_empty() {
+                    self.add_line("Usage: cowsay <message>");
+                } else {
+                    let mut bubble = [0u8; 60];
+                    bubble[0] = b'<';
+                    bubble[1] = b' ';
+                    let full_msg = if cmd_str.len() > 7 { &cmd_str[7..] } else { arg };
+                    let show_len = if full_msg.len() > 36 { 36 } else { full_msg.len() };
+                    
+                    self.add_line("  _____________________________________");
+                    bubble[2..(2 + show_len)].copy_from_slice(&full_msg.as_bytes()[..show_len]);
+                    bubble[2 + show_len] = b' ';
+                    bubble[3 + show_len] = b'>';
+                    self.add_line(core::str::from_utf8(&bubble[..(4 + show_len)]).unwrap_or(""));
+                    self.add_line("  -------------------------------------");
+                    self.add_line("        \\   ^__^");
+                    self.add_line("         \\  (oo)\\_______");
+                    self.add_line("            (__)\\       )\\/\\");
+                    self.add_line("                ||----w |");
+                    self.add_line("                ||     ||");
+                }
+            }
+            "sing" => {
+                self.add_line("Playing arpeggio melody on PC speaker... 🎶");
+                unsafe {
+                    let notes = [261, 329, 392, 523, 392, 523];
+                    for &note in notes.iter() {
+                        crate::sound::play_tone(note);
+                        for _ in 0..12_000 { core::arch::asm!("nop"); }
+                    }
+                    crate::sound::stop_speaker();
+                }
+                self.add_line("Melody completed.");
+            }
+            "fortune" => {
+                let fortunes = [
+                    "You will build the ultimate Rust microkernel in 3 days.",
+                    "A green character stream is in your near future.",
+                    "You are superuser (uloos-root). Use this power wisely.",
+                    "The PC speaker is humming a happy tune for you today.",
+                    "Avoid SSE float instructions on bare-metal x86 today.",
+                    "VGA Mode 13h is 256 colors of absolute retro beauty.",
+                ];
+                let (_, _, s) = crate::get_rtc_time();
+                let idx = (s as usize) % fortunes.len();
+                self.add_line(fortunes[idx]);
+            }
             "doom" => app_switch = Some("doom"),
             "office" => app_switch = Some("office"),
             "explorer" => app_switch = Some("explorer"),
